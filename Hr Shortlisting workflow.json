@@ -1,0 +1,128 @@
+{
+  "name": "Hr Shortlisting workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Job Application",
+        "formFields": {
+          "values": [
+            { "fieldLabel": "Name", "requiredField": true },
+            { "fieldLabel": "Email Address", "fieldType": "email", "requiredField": true },
+            { "fieldLabel": "Submit your Cv", "fieldType": "file", "acceptFileTypes": ".pdf", "requiredField": true }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [ 0, 0 ],
+      "id": "form-trigger-id",
+      "name": "On form submission"
+    },
+    {
+      "parameters": {
+        "inputDataFieldName": "Submit_your_Cv",
+        "name": "={{ $json.Name }} resume",
+        "driveId": { "__rl": true, "value": "My Drive", "mode": "list" },
+        "folderId": {
+          "__rl": true,
+          "value": "REPLACE_WITH_YOUR_FOLDER_ID",
+          "mode": "list",
+          "cachedResultName": "n8n files"
+        }
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [ 208, 0 ],
+      "id": "drive-upload-id",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": { "id": "CREDENTIAL_ID", "name": "Google Drive account" }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "base": { "__rl": true, "value": "REPLACE_WITH_YOUR_AIRTABLE_BASE_ID", "mode": "list" },
+        "table": { "__rl": true, "value": "REPLACE_WITH_YOUR_AIRTABLE_TABLE_ID", "mode": "list" },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Resume Url": "={{ $json.webViewLink }}",
+            "Candidate Name": "={{ $('On form submission').item.json.Name }}",
+            "Email": "={{ $('On form submission').item.json['Email Adress'] }}",
+            "Select": "Pending review"
+          }
+        }
+      },
+      "type": "n8n-nodes-base.airtable",
+      "typeVersion": 2.1,
+      "position": [ 416, 0 ],
+      "id": "airtable-create-id",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": { "id": "CREDENTIAL_ID", "name": "Airtable PAT" }
+      }
+    },
+    {
+      "parameters": {
+        "text": "={{ $json.text }}",
+        "schemaType": "fromJson",
+        "jsonSchemaExample": "{ \"name\": \"\", \"skills\": [], \"experience_years\": 0, ... }",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [ 1040, 0 ],
+      "id": "info-extractor-id",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Evaluate this candidate against the job requirements... (Evaluation logic preserved) ...",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are an expert HR recruiter and talent evaluator..."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [ 1600, 0 ],
+      "id": "hr-ai-agent-id",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.fields.Email }}",
+        "subject": "Resume shortlisted",
+        "message": "Dear {{ $json.fields['Candidate Name'] }}...",
+        "options": { "appendAttribution": false }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [ 2368, -80 ],
+      "id": "gmail-shortlist-id",
+      "name": "Send a message",
+      "credentials": {
+        "gmailOAuth2": { "id": "CREDENTIAL_ID", "name": "Gmail Account" }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": { "main": [[ { "node": "Upload file", "type": "main", "index": 0 } ]] },
+    "Upload file": { "main": [[ { "node": "Create a record", "type": "main", "index": 0 } ]] },
+    "Create a record": { "main": [[ { "node": "Download file", "type": "main", "index": 0 } ]] },
+    "Download file": { "main": [[ { "node": "Extract from File", "type": "main", "index": 0 } ]] },
+    "Extract from File": { "main": [[ { "node": "Information Extractor", "type": "main", "index": 0 } ]] },
+    "Information Extractor": { "main": [[ { "node": "Edit Fields", "type": "main", "index": 0 } ]] },
+    "Edit Fields": { "main": [[ { "node": "AI Agent", "type": "main", "index": 0 } ]] },
+    "AI Agent": { "main": [[ { "node": "Create or update a record", "type": "main", "index": 0 } ]] },
+    "Create or update a record": { "main": [[ { "node": "If", "type": "main", "index": 0 } ]] },
+    "If": { "main": [[ { "node": "Send a message", "type": "main", "index": 0 } ], [ { "node": "Send a message1", "type": "main", "index": 0 } ]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "meta": { "instanceId": "REPLACE_WITH_INSTANCE_ID" },
+  "tags": []
+}
