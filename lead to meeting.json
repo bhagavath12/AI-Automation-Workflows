@@ -1,0 +1,142 @@
+{
+  "name": "lead to meeting",
+  "nodes": [
+    {
+      "parameters": {
+        "sendTo": "={{ $('Webhook').item.json.body.email }}",
+        "subject": "Link to book a meeting",
+        "emailType": "text",
+        "message": "={{ $json.output }}\n\nBest Regards.",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [ 560, 48 ],
+      "id": "gmail-send-id",
+      "name": "Send a message",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "CREDENTIAL_ID",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "REPLACE_WITH_YOUR_SPREADSHEET_ID",
+          "mode": "list",
+          "cachedResultName": "n8n crm",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/REPLACE_WITH_YOUR_SPREADSHEET_ID/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('Webhook').item.json.body.fullName }}",
+            "Email": "={{ $('Webhook').item.json.body.email }}",
+            "Problem Statement": "={{ $('Webhook').item.json.body.problemStatement }}"
+          }
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [ 784, 48 ],
+      "id": "google-sheets-id",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CREDENTIAL_ID",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Generate the email body using the following client data:\n\nClient Name: {{ $json.body.fullName }}\nClient Problem Description: {{ $json.body.problemStatement }}\nMeeting Link: https://calendly.com/YOUR_LINK/30min\n\nWrite a short, professional email in plain text. Output only the email body.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a professional Customer Success Agent. Produce ONLY the full body content of a friendly, business-focused introductory email."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [ 208, 48 ],
+      "id": "ai-agent-id",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [ 96, 272 ],
+      "id": "gemini-model-id",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "CREDENTIAL_ID",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "REPLACE_WITH_YOUR_PATH",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [ -32, 48 ],
+      "id": "webhook-id",
+      "name": "Webhook"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "REPLACE_WITH_CHANNEL_ID",
+          "mode": "list"
+        },
+        "text": "=🚨 New inbound lead just came in\n\nName: {{ $json.Name }}\nEmail: {{ $json.Email }}\n\nProblem:{{ $json.Problem }}\n\nLead has been emailed with a booking link.",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [ 992, 48 ],
+      "id": "slack-id",
+      "name": "Send a message1",
+      "credentials": {
+        "slackApi": {
+          "id": "CREDENTIAL_ID",
+          "name": "Slack account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Send a message": { "main": [[ { "node": "Append row in sheet", "type": "main", "index": 0 } ]] },
+    "AI Agent": { "main": [[ { "node": "Send a message", "type": "main", "index": 0 } ]] },
+    "Google Gemini Chat Model": { "ai_languageModel": [[ { "node": "AI Agent", "type": "ai_languageModel", "index": 0 } ]] },
+    "Webhook": { "main": [[ { "node": "AI Agent", "type": "main", "index": 0 } ]] },
+    "Append row in sheet": { "main": [[ { "node": "Send a message1", "type": "main", "index": 0 } ]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "meta": { "instanceId": "REPLACE_WITH_INSTANCE_ID" },
+  "tags": []
+}
