@@ -1,0 +1,159 @@
+{
+  "name": "Linkedin posting",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [ 16, 656 ],
+      "id": "gemini-chat-id",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "CREDENTIAL_ID",
+          "name": "Google Gemini API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"Linkedin\": \"\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [ 144, 656 ],
+      "id": "output-parser-id",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "person": "REPLACE_WITH_YOUR_LINKEDIN_PERSON_ID",
+        "text": "={{ $('Merge').item.json['Ai Generated post'] }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [ 1616, -80 ],
+      "id": "linkedin-post-id",
+      "name": "Create a post1",
+      "credentials": {
+        "linkedInOAuth2Api": {
+          "id": "CREDENTIAL_ID",
+          "name": "LinkedIn account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "chatId": "REPLACE_WITH_YOUR_TELEGRAM_CHAT_ID",
+        "message": "=🧠 New AI Content Generated\n\n🔵 LinkedIn Post:\n{{ $json['Ai Generated post'] }}\n\nPlease review and approve.",
+        "responseType": "customForm",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Approve/decline",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [ { "option": "Approve" }, { "option": "Decline" } ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Correction",
+              "placeholder": "Remove all the Emojis"
+            }
+          ]
+        },
+        "options": { "appendAttribution": false }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [ 800, 320 ],
+      "id": "telegram-approval-id",
+      "name": "Send message and wait for response",
+      "credentials": {
+        "telegramApi": {
+          "id": "CREDENTIAL_ID",
+          "name": "socials_bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "REPLACE_WITH_YOUR_SPREADSHEET_ID",
+          "mode": "list",
+          "cachedResultName": "Social media workflow",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/REPLACE_WITH_YOUR_SPREADSHEET_ID/edit"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1"
+        },
+        "filtersUI": {
+          "values": [ { "lookupColumn": "Status", "lookupValue": "New" } ]
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [ -448, 432 ],
+      "id": "gsheets-get-id",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "CREDENTIAL_ID",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You will receive a content idea... (SLAY prompt preserved) ...",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are the 'Ultimate LinkedIn Growth Architect'... (System message logic preserved) ..."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [ 0, 432 ],
+      "id": "linkedin-generator-agent-id",
+      "name": "LinkedIn Post generator"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are revising a LinkedIn post... (Revision prompt preserved) ...",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are a senior LinkedIn content strategist... (Editor logic preserved) ..."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [ 1648, 640 ],
+      "id": "post-revisor-agent-id",
+      "name": "Post revisor"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": { "ai_languageModel": [[ { "node": "LinkedIn Post generator", "type": "ai_languageModel", "index": 0 } ]] },
+    "Structured Output Parser": { "ai_outputParser": [[ { "node": "LinkedIn Post generator", "type": "ai_outputParser", "index": 0 } ]] },
+    "Send message and wait for response": { "main": [[ { "node": "If1", "type": "main", "index": 0 } ]] },
+    "Get row(s) in sheet": { "main": [[ { "node": "Limit", "type": "main", "index": 0 } ]] },
+    "Limit": { "main": [[ { "node": "LinkedIn Post generator", "type": "main", "index": 0 } ]] },
+    "LinkedIn Post generator": { "main": [[ { "node": "Update row in sheet", "type": "main", "index": 0 } ]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "meta": { "instanceId": "REPLACE_WITH_INSTANCE_ID" },
+  "tags": []
+}
