@@ -1,0 +1,104 @@
+{
+  "name": "zoho cliq",
+  "nodes": [
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Use this tool to search the official AWS Service Terms document. It contains all universal and service-specific legal clauses, prohibited uses, and data protection rules. Input should be a specific question about AWS policies.",
+        "tableName": {
+          "__rl": true,
+          "value": "documents",
+          "mode": "list"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "typeVersion": 1.3,
+      "position": [ 624, 560 ],
+      "name": "search_aws_terms"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-embedding-001"
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "typeVersion": 1,
+      "position": [ 640, 768 ],
+      "name": "Embeddings Google Gemini1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.user_query }}",
+        "options": {
+          "systemMessage": "## ROLE\nYou are the \"AWS Service Terms Expert.\"\n\n## KNOWLEDGE BASE ACCESS\nYou must use the 'search_aws_terms' tool for every query.\n\n## RESPONSE LENGTH REQUIREMENT\n**CRITICAL: Your response MUST NOT exceed 3500 characters.**"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [ 528, 336 ],
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [ 368, 592 ],
+      "name": "Google Gemini Chat Model1"
+    },
+    {
+      "parameters": {
+        "jsCode": "const input = items[0].json;\nreturn [{ json: { channel_name: input.body.chat.channel_unique_name, chat_id: input.body.chat.id, user_name: input.body.user.first_name, user_query: input.body.message.trim() } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [ 208, 336 ],
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://cliq.zoho.in/api/v2/bots/nnrag/incoming?zapikey=REPLACE_WITH_YOUR_KEY",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            { "name": "text", "value": "={{ $('AI Agent1').item.json.output }}" },
+            { "name": "chat_id", "value": "={{ $('Code in JavaScript').item.json.chat_id }}" },
+            { "name": "channel_unique_name", "value": "={{ $('Webhook').item.json.body.chat.channel_unique_name }}" }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [ 1184, 336 ],
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "REPLACE_WITH_YOUR_PATH",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [ -16, 336 ],
+      "name": "Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "search_aws_terms": { "ai_tool": [[ { "node": "AI Agent1", "type": "ai_tool", "index": 0 } ]] },
+    "Embeddings Google Gemini1": { "ai_embedding": [[ { "node": "search_aws_terms", "type": "ai_embedding", "index": 0 } ]] },
+    "Google Gemini Chat Model1": { "ai_languageModel": [[ { "node": "AI Agent1", "type": "ai_languageModel", "index": 0 } ]] },
+    "AI Agent1": { "main": [[ { "node": "HTTP Request", "type": "main", "index": 0 } ]] },
+    "Code in JavaScript": { "main": [[ { "node": "AI Agent1", "type": "main", "index": 0 } ]] },
+    "Webhook": { "main": [[ { "node": "Code in JavaScript", "type": "main", "index": 0 } ]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "meta": {},
+  "tags": []
+}
