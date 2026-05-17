@@ -1,0 +1,180 @@
+{
+  "name": "manychat",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "23847071-fa66-4134-8e5b-0608004507e0",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        48,
+        144
+      ],
+      "id": "c8efeaba-5ffd-401c-a3a7-f54404ab687c",
+      "name": "Webhook",
+      "webhookId": "REDACTED"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1vOU-__FwaXQuG-ASz1TwFO2iKSN9sQ0Eb7Yufa4CCyI",
+          "mode": "list",
+          "cachedResultName": "whatsapp test",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1vOU-__FwaXQuG-ASz1TwFO2iKSN9sQ0Eb7Yufa4CCyI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1vOU-__FwaXQuG-ASz1TwFO2iKSN9sQ0Eb7Yufa4CCyI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json.body.name }}",
+            "Number": "={{ $json.body.phone }}",
+            "Company Size": "insta",
+            "did we reachout": "insta",
+            "What they want to automate": "insta"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Number",
+              "displayName": "Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company Size",
+              "displayName": "Company Size",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "did we reachout",
+              "displayName": "did we reachout",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "What they want to automate",
+              "displayName": "What they want to automate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        256,
+        144
+      ],
+      "id": "0b4b58ca-1ab7-4085-b1f2-7e6cb72bd8f8",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://graph.facebook.com/v22.0/1052550197934265/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messaging_product\": \"whatsapp\",\n  \"to\": \"{{ $json.Number }}\",\n  \"type\": \"template\",\n  \"template\": {\n    \"name\": \"n8n_demo\",\n    \"language\": { \"code\": \"en\" },\n    \"components\": [\n      {\n        \"type\": \"body\",\n        \"parameters\": [\n          {\n            \"type\": \"text\",\n            \"text\": \"{{ $json.Name }}\"\n          },\n          {\n            \"type\": \"text\",\n            \"text\": \"https://calendly.com/pranadirbhagavathsenareddy/30min\"\n          }\n        ]\n      }\n    ]\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        464,
+        144
+      ],
+      "id": "d54276aa-b2d0-4017-b388-7563b1c30095",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "5c63ecc3-80bb-492a-a115-52493a177182",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "702a7baddd3fdb480012ee407d25716d9e235460dde148c830592c99ca1999a1"
+  },
+  "id": "o2gtqwjDS0X8F5cx",
+  "tags": []
+}

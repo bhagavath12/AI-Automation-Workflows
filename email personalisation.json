@@ -1,0 +1,2313 @@
+{
+  "name": "email personalisation",
+  "nodes": [
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1HJIhtmuqhmoxAxJtjQKwZQMVbks1NQRZrBRA_6mgImo",
+          "mode": "list",
+          "cachedResultName": "personalization.test",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HJIhtmuqhmoxAxJtjQKwZQMVbks1NQRZrBRA_6mgImo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HJIhtmuqhmoxAxJtjQKwZQMVbks1NQRZrBRA_6mgImo/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -80,
+        352
+      ],
+      "id": "48194e2b-241a-40cb-a89b-7aba24187cfa",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "4537e215-2aef-453d-985c-a05cf8b0b46f",
+              "leftValue": "={{ $json.Personalization }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        144,
+        352
+      ],
+      "id": "ed630ed6-784d-4f50-9c0d-5126b7f02f85",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        384,
+        336
+      ],
+      "id": "09f3119d-3050-4f92-bf15-256ab1560c8e",
+      "name": "Loop Over Items",
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -304,
+        352
+      ],
+      "id": "97fe8820-2e68-44cf-83e8-a8bdfcc846ce",
+      "name": "When clicking \u2018Execute workflow\u2019"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1HJIhtmuqhmoxAxJtjQKwZQMVbks1NQRZrBRA_6mgImo",
+          "mode": "list",
+          "cachedResultName": "personalization.test",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HJIhtmuqhmoxAxJtjQKwZQMVbks1NQRZrBRA_6mgImo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HJIhtmuqhmoxAxJtjQKwZQMVbks1NQRZrBRA_6mgImo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Personalization": "={{ JSON.parse($json.content.parts[0].text).hook }}",
+            "Email": "={{ $('If').item.json.Email }}"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Website",
+              "displayName": "Company Website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Personal Email",
+              "displayName": "Personal Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LinkedIn",
+              "displayName": "LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Industry",
+              "displayName": "Industry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Headline",
+              "displayName": "Headline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Seniority",
+              "displayName": "Seniority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Department",
+              "displayName": "Department",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "City",
+              "displayName": "City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Country",
+              "displayName": "Country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Employees Count",
+              "displayName": "Employees Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Keywords",
+              "displayName": "Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Annual Revenue Clean",
+              "displayName": "Company Annual Revenue Clean",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Annual Revenue",
+              "displayName": "Company Annual Revenue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company SEO Description",
+              "displayName": "Company SEO Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Short Description",
+              "displayName": "Company Short Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Linkedin",
+              "displayName": "Company Linkedin",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Linkedin UID",
+              "displayName": "Company Linkedin UID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Total Funding Clean",
+              "displayName": "Company Total Funding Clean",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Total Funding",
+              "displayName": "Company Total Funding",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Technologies",
+              "displayName": "Company Technologies",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email Domain Catchall",
+              "displayName": "Email Domain Catchall",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Person Photo",
+              "displayName": "Person Photo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Twitter URL",
+              "displayName": "Twitter URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Facebook URL",
+              "displayName": "Facebook URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Person ID",
+              "displayName": "Person ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company ID",
+              "displayName": "Company ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Phone Number",
+              "displayName": "Company Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Logo",
+              "displayName": "Company Logo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Twitter",
+              "displayName": "Company Twitter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Facebook",
+              "displayName": "Company Facebook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Market Cap",
+              "displayName": "Company Market Cap",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Founded Year",
+              "displayName": "Company Founded Year",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Domain",
+              "displayName": "Company Domain",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Raw Address",
+              "displayName": "Company Raw Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Street Address",
+              "displayName": "Company Street Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company City",
+              "displayName": "Company City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company State",
+              "displayName": "Company State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Country",
+              "displayName": "Company Country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Postal Code",
+              "displayName": "Company Postal Code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Personalization",
+              "displayName": "Personalization",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        4336,
+        304
+      ],
+      "id": "ef1ebe2a-fc1a-452e-99c1-ad55cc2237cf",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "6e438562-b990-4274-baf6-7a6d20cda8a0",
+      "name": "Remove Duplicate URLs",
+      "type": "n8n-nodes-base.removeDuplicates",
+      "position": [
+        1936,
+        -128
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "links",
+              "cssSelector": "a",
+              "returnValue": "attribute",
+              "attribute": "href",
+              "returnArray": true
+            }
+          ]
+        },
+        "options": {
+          "trimValues": true,
+          "cleanUpText": true
+        }
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        816,
+        -32
+      ],
+      "id": "6582951b-2bd1-4400-9ca9-680b1eba7c4e",
+      "name": "HTML"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "links",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        1264,
+        -128
+      ],
+      "id": "aeea419f-1d74-4dd9-a1fe-14df2b805fe5",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9a75bc22-f6b3-426e-96df-db5e319e5cd5",
+              "leftValue": "={{ $json.links }}",
+              "rightValue": "/",
+              "operator": {
+                "type": "string",
+                "operation": "startsWith"
+              }
+            },
+            {
+              "id": "5ee57d80-4599-4864-879e-44f2ca5295de",
+              "leftValue": "={{ $json.links }}",
+              "rightValue": "={{ $('Loop Over Items').item.json['Company Website'].replace('https://','').replace('http://','').replace('www.','').split('/')[0] }}",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        1488,
+        -128
+      ],
+      "id": "e59d61e5-be00-4989-8f87-3cb766838214",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "url": "={{ \n  $json.links.startsWith('http') \n    ? $json.links \n    : $('Loop Over Items').item.json['Company Website'].replace(/\\/$/, '') + $json.links \n}}",
+        "options": {}
+      },
+      "id": "a5f6d7c0-4f42-4c4a-bbb9-acd01cf5542e",
+      "name": "Request web page for URL",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        2864,
+        -128
+      ],
+      "typeVersion": 4.2,
+      "alwaysOutputData": false,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "html": "={{ $json.data ? $json.data : \"<div>no content</div>\" }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.markdown",
+      "typeVersion": 1,
+      "position": [
+        3088,
+        -128
+      ],
+      "id": "b5761922-b30d-4e0b-bef6-103161f89446",
+      "name": "Markdown"
+    },
+    {
+      "parameters": {
+        "maxItems": 4
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        2640,
+        -128
+      ],
+      "id": "5b661c9f-967d-473e-97e3-f4a2601dd33a",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json['Company Website'] }}",
+        "options": {
+          "allowUnauthorizedCerts": false,
+          "redirect": {
+            "redirect": {}
+          },
+          "response": {
+            "response": {}
+          }
+        }
+      },
+      "id": "d325a542-81a5-4608-a7e5-da8d829bd411",
+      "name": "Scrape Home",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        592,
+        64
+      ],
+      "executeOnce": false,
+      "typeVersion": 4.2,
+      "alwaysOutputData": false,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "content.parts[0].text"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.aggregate",
+      "typeVersion": 1,
+      "position": [
+        3664,
+        -128
+      ],
+      "id": "faa5622a-8a49-4c07-90e8-494672687e23",
+      "name": "Aggregate"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=## ROLE & GOAL\nYou are an intelligent website scraping assistant. Your goal is to analyze the provided Markdown content from a website page and generate a comprehensive, two-paragraph abstract summarizing it.\n\n## RULES\n- The abstract must be detailed, with a level of detail similar to an abstract for a published paper.\n- Use a straightforward and spartan tone of voice.\n- If the input content is empty or contains no meaningful text, the abstract must be exactly \"no content\".\n\n## OUTPUT FORMAT\nYou MUST output a valid JSON object and nothing else. The JSON object must contain a single key, \"abstract\", with your two-paragraph summary as its value.\n\nExample:\n{\"abstract\":\"Your two-paragraph abstract goes here.\"}\n\n## MARKDOWN CONTENT TO ANALYZE\n{{ $json.data }}"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        3312,
+        -128
+      ],
+      "id": "e1684e56-5d2f-448e-8684-8f34f4e03294",
+      "name": "Summarize Website Page",
+      "retryOnFail": true,
+      "credentials": {
+        "googlePalmApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=ROLE & GOAL\nYou are an intelligent sales researcher. Your goal is to write a single, compelling, and personalized first sentence for a cold email that proves you've done genuine research. It should sound like a sharp observation, not a compliment.\n\nRULES\n\n\n1.No Greeting: Do NOT start with \"Hi {name},\" or any greeting.\n\n2.No Flattery: Do NOT start with phrases like \"Love the mission\", \"Really appreciate\", \"Big fan of\", \"Impressed by\" or any variation of praise. This sounds generic and weak.\n\n3.Lead with an observation: Start by noticing something specific about how they work, what they do differently, or what stands out \u2014 stated as a fact, not a compliment.\n\n4.Single Sentence Only: One sentence plus a short closing like \"Wanted to run something by you.\"\nStrict JSON Format: Output only {\"hook\": \"...\"} \u2014 nothing else.\n\n6.Be Specific: Reference a non-obvious detail \u2014 a unique process, methodology, niche focus, or specific service.\n\n7.Concise Tone: Friendly but peer-to-peer. Not salesy. Not impressed. Just noticing.\n\n8.If website content is empty or says \"no content\" \u2014 output exactly {\"hook\": \"NO_WEBSITE_DATA\"} and nothing else.\n\n9.Only use \"Love\" or emotional language if the company has a clear sustainability, ethical, or social mission. In all other cases lead with a neutral observation. Example of when \"Love\" is acceptable: {\"hook\": \"Love that Grovemade only sources wood from responsibly managed forests \u2014 rare to see that level of commitment in the accessories space. Wanted to run something by you.\"}\n\nGOOD EXAMPLES\n{\"hook\": \"Noticed Anchor builds out a brand's VOICE and THEME before touching any content \u2014 not many agencies take that step first. Wanted to run something by you.\"}\n\n{\"hook\": \"Saw that Tank Girl runs a full academy alongside their agency work \u2014 interesting model. Wanted to run something by you.\"}\n\n{\"hook\": \"Love the mission at Grovemade Goods\u2014also a big believer in your philosophy on sourcing wood from responsibly managed local forests. Wanted to run something by you.\"}\n\nBAD EXAMPLES \u2014 NEVER DO THIS\n\"Really appreciate how Anchor identifies a brand's VOICE...\"\n\"Big fan of what you're building at Tank Girl...\"\nTASK: GENERATE HOOK\nYOUR INPUT:\nProfile: {{ $('Loop Over Items').item.json['First Name'] }} {{ $('Loop Over Items').item.json['Last Name'] }}, {{ $('Loop Over Items').item.json.Headline }}\nWebsite:\n{{ $json.text }}\n"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        3856,
+        -128
+      ],
+      "id": "d8614f57-f42c-4fd7-be5d-cbab7c22dc36",
+      "name": "icebreaker",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "78d2d038-471a-44ea-8877-017452f3a5ec",
+              "leftValue": "={{ $json.links }}",
+              "rightValue": "",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1040,
+        -32
+      ],
+      "id": "25cb1df1-8e04-4d70-a8f3-b41d2c8a4deb",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2e95b382-6251-4410-864c-40b7c5083657",
+              "name": "data",
+              "value": "SCRAPE_FAILED",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        816,
+        160
+      ],
+      "id": "1d52b1b5-9315-49e1-8aeb-952b99611064",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1HJIhtmuqhmoxAxJtjQKwZQMVbks1NQRZrBRA_6mgImo",
+          "mode": "list",
+          "cachedResultName": "personalization.test",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HJIhtmuqhmoxAxJtjQKwZQMVbks1NQRZrBRA_6mgImo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HJIhtmuqhmoxAxJtjQKwZQMVbks1NQRZrBRA_6mgImo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ $('Loop Over Items').item.json.Email }}",
+            "Personalization": "SCRAPE_FAILED"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Website",
+              "displayName": "Company Website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Personal Email",
+              "displayName": "Personal Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LinkedIn",
+              "displayName": "LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Industry",
+              "displayName": "Industry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Headline",
+              "displayName": "Headline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Seniority",
+              "displayName": "Seniority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Department",
+              "displayName": "Department",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "City",
+              "displayName": "City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Country",
+              "displayName": "Country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Employees Count",
+              "displayName": "Employees Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Keywords",
+              "displayName": "Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Annual Revenue Clean",
+              "displayName": "Company Annual Revenue Clean",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Annual Revenue",
+              "displayName": "Company Annual Revenue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company SEO Description",
+              "displayName": "Company SEO Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Short Description",
+              "displayName": "Company Short Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Linkedin",
+              "displayName": "Company Linkedin",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Linkedin UID",
+              "displayName": "Company Linkedin UID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Total Funding Clean",
+              "displayName": "Company Total Funding Clean",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Total Funding",
+              "displayName": "Company Total Funding",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Technologies",
+              "displayName": "Company Technologies",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email Domain Catchall",
+              "displayName": "Email Domain Catchall",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Person Photo",
+              "displayName": "Person Photo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Twitter URL",
+              "displayName": "Twitter URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Facebook URL",
+              "displayName": "Facebook URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Person ID",
+              "displayName": "Person ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company ID",
+              "displayName": "Company ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Phone Number",
+              "displayName": "Company Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Logo",
+              "displayName": "Company Logo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Twitter",
+              "displayName": "Company Twitter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Facebook",
+              "displayName": "Company Facebook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Market Cap",
+              "displayName": "Company Market Cap",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Founded Year",
+              "displayName": "Company Founded Year",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Domain",
+              "displayName": "Company Domain",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Raw Address",
+              "displayName": "Company Raw Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Street Address",
+              "displayName": "Company Street Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company City",
+              "displayName": "Company City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company State",
+              "displayName": "Company State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Country",
+              "displayName": "Company Country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Postal Code",
+              "displayName": "Company Postal Code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Personalization",
+              "displayName": "Personalization",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1040,
+        160
+      ],
+      "id": "ef7faa9b-a4a7-411a-b4e1-89038e237b80",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1HJIhtmuqhmoxAxJtjQKwZQMVbks1NQRZrBRA_6mgImo",
+          "mode": "list",
+          "cachedResultName": "personalization.test",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HJIhtmuqhmoxAxJtjQKwZQMVbks1NQRZrBRA_6mgImo/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HJIhtmuqhmoxAxJtjQKwZQMVbks1NQRZrBRA_6mgImo/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ $('Loop Over Items').item.json.Email }}",
+            "Personalization": "NO_LINKS_FOUND"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Website",
+              "displayName": "Company Website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Personal Email",
+              "displayName": "Personal Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LinkedIn",
+              "displayName": "LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Industry",
+              "displayName": "Industry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Headline",
+              "displayName": "Headline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Seniority",
+              "displayName": "Seniority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Department",
+              "displayName": "Department",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "City",
+              "displayName": "City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Country",
+              "displayName": "Country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Employees Count",
+              "displayName": "Employees Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Keywords",
+              "displayName": "Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Annual Revenue Clean",
+              "displayName": "Company Annual Revenue Clean",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Annual Revenue",
+              "displayName": "Company Annual Revenue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company SEO Description",
+              "displayName": "Company SEO Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Short Description",
+              "displayName": "Company Short Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Linkedin",
+              "displayName": "Company Linkedin",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Linkedin UID",
+              "displayName": "Company Linkedin UID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Total Funding Clean",
+              "displayName": "Company Total Funding Clean",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Total Funding",
+              "displayName": "Company Total Funding",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Technologies",
+              "displayName": "Company Technologies",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email Domain Catchall",
+              "displayName": "Email Domain Catchall",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Person Photo",
+              "displayName": "Person Photo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Twitter URL",
+              "displayName": "Twitter URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Facebook URL",
+              "displayName": "Facebook URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Person ID",
+              "displayName": "Person ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company ID",
+              "displayName": "Company ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Phone Number",
+              "displayName": "Company Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Logo",
+              "displayName": "Company Logo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Twitter",
+              "displayName": "Company Twitter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Facebook",
+              "displayName": "Company Facebook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Market Cap",
+              "displayName": "Company Market Cap",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Founded Year",
+              "displayName": "Company Founded Year",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Domain",
+              "displayName": "Company Domain",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Raw Address",
+              "displayName": "Company Raw Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Street Address",
+              "displayName": "Company Street Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company City",
+              "displayName": "Company City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company State",
+              "displayName": "Company State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Country",
+              "displayName": "Company Country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Postal Code",
+              "displayName": "Company Postal Code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Personalization",
+              "displayName": "Personalization",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1264,
+        64
+      ],
+      "id": "102d42d0-c60f-4999-a0f2-a815e5d9c03b",
+      "name": "Append or update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nconst updatedItems = items.map((item) => {\n  const link = item?.json?.links;\n\n  if (typeof link === \"string\") {\n    // Case: starts with \"/\" \u2192 already relative\n    if (link.startsWith(\"/\")) {\n      item.json.links = link;\n    } \n    \n    // Case: absolute URL (http or https)\n    else if (link.startsWith(\"http://\") || link.startsWith(\"https://\")) {\n      try {\n        const url = new URL(link);\n        let path = url.pathname;\n\n        // Strip trailing slash unless root \"/\"\n        if (path !== \"/\" && path.endsWith(\"/\")) {\n          path = path.slice(0, -1);\n        }\n\n        item.json.links = path || \"/\";\n      } catch (e) {\n        // On parse error, keep original\n        item.json.links = link;\n      }\n    }\n\n    // Fallback: not relative or absolute, leave as-is\n    else {\n      item.json.links = link;\n    }\n  }\n\n  return item;\n});\n\nreturn updatedItems;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1712,
+        -128
+      ],
+      "id": "32aed3db-a2fa-4bba-bc04-e5173ec67973",
+      "name": "Normalize URLs"
+    },
+    {
+      "parameters": {
+        "jsCode": "const keywords = $('Set Config').item.json.target_keywords\n  .split(',')\n  .map(k => k.trim().toLowerCase());\n\nconst depriority = ['privacy', 'terms', 'login', 'sitemap', 'feed', \n  'careers', 'jobs', '#', 'mg_ld', 'linkedin', 'twitter', \n  'facebook', 'instagram', 'google', 'wp-'];\n\nconst scored = $input.all().map(item => {\n  const link = (item.json.links || '').toLowerCase();\n  const depth = link.split('/').filter(Boolean).length;\n  const isDepriority = depriority.some(d => link.includes(d));\n  const isPriority = keywords.some(k => link.includes(k));\n  \n  item.json._score = isDepriority ? -1 : isPriority ? 2 : depth === 1 ? 1 : 0;\n  return item;\n});\n\nreturn scored.sort((a, b) => b.json._score - a.json._score);"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2384,
+        -128
+      ],
+      "id": "104e1e89-f407-4f91-af1d-d8b9f5f27754",
+      "name": "Priority Score URLs"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2851bee2-079d-4071-b28f-518f1c685cd1",
+              "name": "niche",
+              "value": "marketing agency",
+              "type": "string"
+            },
+            {
+              "id": "d4c6e92f-b4ff-43a6-ac3a-78fee8e07b51",
+              "name": "target_keywords",
+              "value": "marketing, creative, inbound, web design, portfolio, services, advertising",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2160,
+        -128
+      ],
+      "id": "d005b13f-570d-4390-b91f-2f6ea041c47f",
+      "name": "Set Config"
+    }
+  ],
+  "pinData": {
+    "When clicking \u2018Execute workflow\u2019": [
+      {
+        "json": {},
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Scrape Home",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking \u2018Execute workflow\u2019": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicate URLs": {
+      "main": [
+        [
+          {
+            "node": "Set Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Normalize URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Request web page for URL": {
+      "main": [
+        [
+          {
+            "node": "Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Request web page for URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Home": {
+      "main": [
+        [
+          {
+            "node": "HTML",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown": {
+      "main": [
+        [
+          {
+            "node": "Summarize Website Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "icebreaker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize Website Page": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "icebreaker": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append or update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize URLs": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicate URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Priority Score URLs": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Config": {
+      "main": [
+        [
+          {
+            "node": "Priority Score URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d0dba664-4fc7-4da8-8441-e862fa5f60d2",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "702a7baddd3fdb480012ee407d25716d9e235460dde148c830592c99ca1999a1"
+  },
+  "id": "r2yuKLWeTl6EUw2b",
+  "tags": []
+}

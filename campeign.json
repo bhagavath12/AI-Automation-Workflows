@@ -1,0 +1,832 @@
+{
+  "name": "campeign",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -288
+      ],
+      "id": "bac06fcc-a988-4c6a-a268-16edae5fa90e",
+      "name": "When clicking \u2018Execute workflow\u2019"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1SwM_nChaU364bixsA57jtKZgakDec_yiKRRsAsyDzrs",
+          "mode": "list",
+          "cachedResultName": "marketing agencies",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SwM_nChaU364bixsA57jtKZgakDec_yiKRRsAsyDzrs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 129719928,
+          "mode": "list",
+          "cachedResultName": "Good P",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SwM_nChaU364bixsA57jtKZgakDec_yiKRRsAsyDzrs/edit#gid=129719928"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        0
+      ],
+      "id": "33280cab-a9d9-46d9-967d-fee5ef3cf193",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "=Quick idea to help {{ $json['Company Name'] }} get more meetings",
+        "emailType": "text",
+        "message": "=Hey {{ $json['First Name'] }},\n\n{{ $json.Personalization }}\n\nI\u2019ll keep it quick \u2014 I\u2019ve been helping a few agencies fix their lead follow-ups and onboarding, and the numbers have been pretty consistent:\n\n20\u201340% more meetings booked\n\n5\u201312 hours/week saved\n\nMuch less manual work\n\nAll I do is automate two things:\n\nLead \u2192 meeting follow-ups & scheduling\n\nClient onboarding (contracts, folders, tasks, welcome email, kickoff call)\n\nThe full setup normally costs around $2,000, but I\u2019m looking to build a case study, so I\u2019m waiving the cost entirely to demonstrate the value first \u2014 I just ask for a testimonial if (and only if) it saves you time.\n\nIf you want to take a look, here\u2019s my LinkedIn so you know who\u2019s reaching out:\nLinkedIn: https://www.linkedin.com/in/pranadir-bhagavath-sena-reddy-bakaram-253572251/\n\nHappy to share more details if you're interested.\n\nBest,\nPranadir",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1104,
+        -144
+      ],
+      "id": "98705ed8-ce35-410f-8505-d04404732b66",
+      "name": "Send a message",
+      "webhookId": "REDACTED",
+      "alwaysOutputData": true,
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "d092f6ef-4f71-4df8-9980-b7092120ff32",
+              "leftValue": "={{ $json.Status }}",
+              "rightValue": "Pending",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "21793021-7452-401a-8abd-f64ff78613fe",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        848,
+        -160
+      ],
+      "id": "e5db235e-1a8c-4500-9692-d5d8118279f3",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1SwM_nChaU364bixsA57jtKZgakDec_yiKRRsAsyDzrs",
+          "mode": "list",
+          "cachedResultName": "marketing agencies",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SwM_nChaU364bixsA57jtKZgakDec_yiKRRsAsyDzrs/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 129719928,
+          "mode": "list",
+          "cachedResultName": "Good P",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1SwM_nChaU364bixsA57jtKZgakDec_yiKRRsAsyDzrs/edit#gid=129719928"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Email": "={{ $('Loop Over Items').item.json.Email }}",
+            "Status": "={{ $json.labelIds[0] }}"
+          },
+          "matchingColumns": [
+            "Email"
+          ],
+          "schema": [
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last Name",
+              "displayName": "Last Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Website",
+              "displayName": "Company Website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Personal Email",
+              "displayName": "Personal Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Full Name",
+              "displayName": "Full Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LinkedIn",
+              "displayName": "LinkedIn",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Title",
+              "displayName": "Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Industry",
+              "displayName": "Industry",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Headline",
+              "displayName": "Headline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Seniority",
+              "displayName": "Seniority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Department",
+              "displayName": "Department",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "City",
+              "displayName": "City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "State",
+              "displayName": "State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Country",
+              "displayName": "Country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Employees Count",
+              "displayName": "Employees Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Keywords",
+              "displayName": "Keywords",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Annual Revenue Clean",
+              "displayName": "Company Annual Revenue Clean",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Annual Revenue",
+              "displayName": "Company Annual Revenue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company SEO Description",
+              "displayName": "Company SEO Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Short Description",
+              "displayName": "Company Short Description",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Linkedin",
+              "displayName": "Company Linkedin",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Linkedin UID",
+              "displayName": "Company Linkedin UID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Total Funding Clean",
+              "displayName": "Company Total Funding Clean",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Total Funding",
+              "displayName": "Company Total Funding",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Technologies",
+              "displayName": "Company Technologies",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Email Domain Catchall",
+              "displayName": "Email Domain Catchall",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Person Photo",
+              "displayName": "Person Photo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Twitter URL",
+              "displayName": "Twitter URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Facebook URL",
+              "displayName": "Facebook URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Person ID",
+              "displayName": "Person ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company ID",
+              "displayName": "Company ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Phone Number",
+              "displayName": "Company Phone Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Logo",
+              "displayName": "Company Logo",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Twitter",
+              "displayName": "Company Twitter",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Facebook",
+              "displayName": "Company Facebook",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Market Cap",
+              "displayName": "Company Market Cap",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Founded Year",
+              "displayName": "Company Founded Year",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Domain",
+              "displayName": "Company Domain",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Raw Address",
+              "displayName": "Company Raw Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Street Address",
+              "displayName": "Company Street Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company City",
+              "displayName": "Company City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company State",
+              "displayName": "Company State",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Country",
+              "displayName": "Company Country",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Company Postal Code",
+              "displayName": "Company Postal Code",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Personalization",
+              "displayName": "Personalization",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "P Rating",
+              "displayName": "P Rating",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1312,
+        -144
+      ],
+      "id": "078b0b02-34cd-4e4a-a8a7-56bc5b0ea5fb",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "maxItems": 50
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        624,
+        -96
+      ],
+      "id": "2679f4bf-9935-4cd5-acd6-9ab24ca82274",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "amount": 10,
+        "unit": "minutes"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1520,
+        -144
+      ],
+      "id": "53c7cd16-8932-49b1-acb5-e0d90d95857e",
+      "name": "Wait",
+      "webhookId": "REDACTED"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 18
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -48,
+        0
+      ],
+      "id": "1001fbe2-0a5e-42a3-912a-e9c66e7be873",
+      "name": "Schedule Trigger"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking \u2018Execute workflow\u2019": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "5f010c6f-5918-4617-84d4-6ad62a6395c9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "702a7baddd3fdb480012ee407d25716d9e235460dde148c830592c99ca1999a1"
+  },
+  "id": "8zZIdh4k3euoNiRJ",
+  "tags": []
+}

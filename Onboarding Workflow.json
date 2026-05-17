@@ -1,0 +1,1028 @@
+{
+  "name": "Onboarding Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "sendTo": "={{ $('On form submission').item.json.Email }}",
+        "subject": "=Welcome to AutomationDigital {{ $('On form submission').item.json.Name }}- Your Onboarding is Complete!",
+        "emailType": "text",
+        "message": "=Hi {{ $('On form submission').item.json.Name }},\n\nWelcome aboard! We\u2019re excited to partner with you and your team to help scale your business with AI-powered systems.\n\nYour project workspace is live, and we\u2019ve already kicked off the initial project scoping.\n\nYou should be recieving invites to the following:\n\nSlack \u2013 Our main communication hub\n\nClickUp \u2013 For tracking project tasks and progress\n\nGoogle Drive \u2013 For sharing and accessing all related assets\n\nNext Steps\nUpload any relevant documentation here:\n[Google Drive Folder](https://drive.google.com/drive/u/0/folders/{{ $('Create Main Client Folder').item.json.id }})\n\nSchedule your onboarding call:\nhttps://go.oncehub.com/AgentStackClientOnboarding\n\nSit tight\u2014we\u2019ll review your uploads before the call and come prepared with next-step recommendations.\n\nIf you need anything or have questions in the meantime, feel free to reach out anytime.\n\nLooking forward to what we\u2019ll build together.\n\nBest,\nPranadir\nFounder, Automation Digital",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "dffb638e-a6d0-4fdd-9aa5-e77a3294d32b",
+      "name": "Send Welcome Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        672,
+        -160
+      ],
+      "webhookId": "REDACTED",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "Client Onboarding Form",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "placeholder": "Your Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "placeholder": "Your Email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Company Name",
+              "placeholder": "Company Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Website",
+              "placeholder": "Website url",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Proposal/Scope Document",
+              "fieldType": "file",
+              "acceptFileTypes": "drop the proposal here",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -912,
+        -128
+      ],
+      "id": "0eebe7d9-2449-44e2-b565-ddf1900e8d9a",
+      "name": "On form submission",
+      "webhookId": "REDACTED"
+    },
+    {
+      "parameters": {
+        "resource": "channel",
+        "channelId": "={{ $('On form submission').item.json['Company Name'].replace(/\\s+/g, '_').toLowerCase() + '_channel' }}"
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        192,
+        -48
+      ],
+      "id": "d4ccb383-6d8b-4a89-afe5-150be5de5eb1",
+      "name": "Slack | Create Channel",
+      "webhookId": "REDACTED",
+      "executeOnce": true,
+      "credentials": {
+        "slackApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "={{ $json.id }}",
+          "mode": "id"
+        },
+        "text": "=\ud83c\udf89 Welcome {{ $('On form submission').item.json.Name }}! \ud83c\udf89\n\nWe\u2019re excited to have you on board and can\u2019t wait to dive in!\n\nThis channel will be our main hub for communication throughout the project. Feel free to drop any questions, updates, or files here \u2014 we\u2019ll do the same on our end. We\u2019re here to support you every step of the way.\n\nTo get things rolling, we\u2019ll be:\n\u2705 Sharing your onboarding checklist\n\u2705 Setting up our kickoff call\n\u2705 Walking through next steps and deliverables\n\nIf you ever need anything, just tag us here \u2014 we\u2019ve got you covered.\n\nLet\u2019s make some magic happen! \ud83d\ude80\n\n\u2014 Pranadir",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        432,
+        -48
+      ],
+      "id": "267c6a9b-2f54-4e77-830f-4ae4387f7598",
+      "name": "Slack | Post Message",
+      "webhookId": "REDACTED",
+      "credentials": {
+        "slackApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Rename Doc').item.json.projectInformation }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=# Overview  \nYou are an AI onboarding agent responsible for reviewing a proposal and scoping document for a new client. Your job is to extract a comprehensive list of actionable tasks, assign appropriate task titles, estimate durations, and generate due dates accordingly. The final output will be used to populate a ClickUp folder for the team to begin onboarding activities.\n\n## Context  \n- Input is provided as a plain text string containing the proposal and scoping document.  \n- You are operating in US Central Time.  \n- The current date and time must be noted in each output to calculate due dates.  \n- All due dates should be in MM/DD/YYYY format.  \n- Tasks should be based on standard estimated durations unless otherwise specified in the document.  \n- The task list should be detailed, ideally including 20 to 30 to-do items to cover every minor and major step involved.  \n\n## Instructions  \n1. Read and analyze the scoping document contents.  \n2. Break down the onboarding process into detailed subtasks.  \n3. For each task:\n   - Create a clear, concise title.  \n   - Write a description with enough detail to guide execution.  \n   - Estimate and apply a duration from today\u2019s date.  \n   - Format the due date as MM/DD/YYYY.  \n4. Structure the output to be easily transferable into ClickUp.  \n5. Begin the output with the current date and time in US Central Time.  \n\n## Tools  \n- Internal clock set to US Central Time  \n- Text parser to extract and organize tasks  \n- Predefined duration rules (if not provided, use default estimates per task type)  \n\n## Examples  \n- Input: \"Initial strategy alignment call and documentation setup expected within first 3 days.\"  \n- Output:\n  - **Current Date and Time:** 06/20/2025 10:30 AM (US Central)  \n  - **Task 1**  \n    - Title: \"Book Strategy Alignment Call\"  \n    - Description: Coordinate and schedule a kickoff call with the client to discuss strategy.  \n    - Due Date: 06/21/2025  \n  - **Task 2**  \n    - Title: \"Create Strategy Notes Document\"  \n    - Description: Prepare a shared document to collect notes and agreements from the alignment call.  \n    - Due Date: 06/23/2025  \n\n## SOP (Standard Operating Procedure)  \n1. Capture the current date and time in US Central Time.  \n2. Parse the document and extract all major and minor tasks implied or directly mentioned.  \n3. Expand each process into granular to-dos (20\u201330 items).  \n4. Assign a title, detailed description, and calculated due date for each task.  \n5. Ensure output is formatted cleanly for ClickUp import.\n\n## Final Notes  \n- Default duration is 2 days unless otherwise indicated.  \n- If a task's due date falls on a weekend, roll it forward to the next weekday.  \n- Focus on actionable and sequential items: tool setup, access requests, documentation, meetings, integrations, QA, testing, etc.  \n- Each task should represent a unique and independent step in the onboarding flow.  \n\n## Output Formatting Rules\n- Your entire response MUST be a valid JSON object that strictly adheres to the provided schema.\n- Do NOT include any introductory sentences, conversational text, or explanations like \"Here is the JSON...\" either before or after the JSON object.\n- Do NOT wrap the JSON in markdown code fences (e.g., ```json).\n- The output must start with the character `{` and end with the character `}`.\n---\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.9,
+      "position": [
+        -656,
+        -32
+      ],
+      "id": "4081754b-46a9-4c8c-843a-1dffbd9144dc",
+      "name": "Segment Tasks"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"current_datetime\": \"06/20/2025 10:30 AM\",\n  \"timezone\": \"US Central\",\n  \"tasks\": [\n    {\n      \"title\": \"Client Workspace Setup\",\n      \"description\": \"Set up client workspace including email, Slack, and Google Drive access.\",\n      \"due_date\": \"06/22/2025\"\n    },\n    {\n      \"title\": \"Kickoff Call Scheduling\",\n      \"description\": \"Schedule and confirm kickoff call with the client and internal team.\",\n      \"due_date\": \"06/23/2025\"\n    },\n    {\n      \"title\": \"Access Credentials Request\",\n      \"description\": \"Request all necessary credentials from the client (CRM, website, analytics, etc.).\",\n      \"due_date\": \"06/21/2025\"\n    }\n  ]\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.2,
+      "position": [
+        -448,
+        176
+      ],
+      "id": "8e301d4a-dc99-4b70-b550-cf4b0746c179",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output.tasks",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -288,
+        -32
+      ],
+      "id": "c05b04bf-927e-4418-b757-bca0075f6ade",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "team": "90161294082",
+        "space": "90136661736",
+        "folder": "={{ $('ClickUp | Create Folder').item.json.id }}",
+        "list": "={{ $('ClickUp | Create List').item.json.id }}",
+        "name": "={{ $json.title }}",
+        "additionalFields": {
+          "assignees": [
+            144201222
+          ],
+          "content": "={{ $json.description }}",
+          "dueDate": "={{ $json.due_date }}",
+          "priority": 3
+        }
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        128,
+        160
+      ],
+      "id": "5e22773f-a145-4b8f-a707-3310d7d84434",
+      "name": "ClickUp",
+      "credentials": {
+        "clickUpApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -96,
+        -32
+      ],
+      "id": "16a82f41-bc98-45e9-9247-2fd7f864d4fa",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1ef9b1c6-86b6-43b4-a02d-3250a6f7ba4d",
+              "name": "projectInformation",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -448,
+        -272
+      ],
+      "id": "529c5cc7-f1e6-437c-9f88-ac1e769b3c44",
+      "name": "Rename Doc"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "Proposal_Scope_Document",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        -272
+      ],
+      "id": "ed04cc72-09ee-42f8-ae09-0461211c26c0",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "13bbafe7-47b1-45d5-8ea0-914de02c8e8a",
+              "name": "DriveFolderID",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -16,
+        -272
+      ],
+      "id": "4cb73f69-bcc9-4f55-a480-fc0c4b3a0e66",
+      "name": "Rename Folder ID"
+    },
+    {
+      "parameters": {
+        "resource": "list",
+        "operation": "create",
+        "team": "90161294082",
+        "space": "90165336374",
+        "folder": "={{ $json.id }}",
+        "name": "= {{ $('On form submission').item.json['Company Name'] }} Onboarding",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        400,
+        -272
+      ],
+      "id": "a4d4ca55-671e-4f25-83bd-4298565a3e95",
+      "name": "ClickUp | Create List",
+      "credentials": {
+        "clickUpApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "team": "90161294082",
+        "space": "90165336374",
+        "name": "={{ $('On form submission').item.json['Company Name'] }} | Client Folder"
+      },
+      "id": "ab252eb5-acc0-4423-8b7e-7644b88bf64b",
+      "name": "ClickUp | Create Folder",
+      "type": "n8n-nodes-base.clickUp",
+      "typeVersion": 1,
+      "position": [
+        192,
+        -272
+      ],
+      "executeOnce": true,
+      "credentials": {
+        "clickUpApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "resource": "folder",
+        "name": "={{ $('On form submission').item.json['Company Name'] }} | Client Folder",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1k_ZBxTXu-gJxir2tnLcW8UGwR6iVEmFE",
+          "mode": "list",
+          "cachedResultName": "n8n images",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1k_ZBxTXu-gJxir2tnLcW8UGwR6iVEmFE"
+        },
+        "options": {}
+      },
+      "id": "0e422bb2-fd3e-4764-860b-1743aa933f49",
+      "name": "Create Main Client Folder",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        -240,
+        -272
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -800,
+        176
+      ],
+      "id": "1434abae-643f-4128-be2c-8f137ea4c24b",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Create Main Client Folder": [
+      {
+        "json": {
+          "kind": "drive#file",
+          "id": "1iGyImjSRXiGLoBKN2ZGO4XH9Jhn36Wdw",
+          "name": "Ai | Client Folder",
+          "mimeType": "application/vnd.google-apps.folder"
+        }
+      }
+    ],
+    "ClickUp | Create Folder": [
+      {
+        "json": {
+          "id": "90167064732",
+          "name": "Ai | Client Folder",
+          "orderindex": 0,
+          "override_statuses": false,
+          "hidden": false,
+          "space": {
+            "id": "90165336374",
+            "name": "Team Space",
+            "access": true
+          },
+          "task_count": "0",
+          "archived": false,
+          "statuses": [],
+          "deleted": false,
+          "lists": [],
+          "permission_level": "create"
+        }
+      }
+    ],
+    "ClickUp | Create List": [
+      {
+        "json": {
+          "id": "901611609471",
+          "name": " Ai Onboarding",
+          "deleted": false,
+          "orderindex": 1,
+          "content": "",
+          "priority": null,
+          "assignee": null,
+          "task_count": 0,
+          "due_date": null,
+          "start_date": null,
+          "folder": {
+            "id": "90167064732",
+            "name": "Ai | Client Folder",
+            "hidden": false,
+            "access": true
+          },
+          "space": {
+            "id": "90165336374",
+            "name": "Team Space",
+            "access": true
+          },
+          "inbound_address": "a.t.901611609471.u-248445374.5aaf436b-6f60-47d2-a502-d1e64986c695@tasks.clickup.com",
+          "archived": false,
+          "override_statuses": false,
+          "statuses": [
+            {
+              "id": "p90165336374_DCnaeiSB",
+              "status": "to do",
+              "orderindex": 0,
+              "color": "#87909e",
+              "type": "open",
+              "status_group": "proj_90165336374"
+            },
+            {
+              "id": "p90165336374_g9uxhsQM",
+              "status": "in progress",
+              "orderindex": 1,
+              "color": "#1090e0",
+              "type": "custom",
+              "status_group": "proj_90165336374"
+            },
+            {
+              "id": "p90165336374_syqLtYOY",
+              "status": "complete",
+              "orderindex": 2,
+              "color": "#008844",
+              "type": "closed",
+              "status_group": "proj_90165336374"
+            }
+          ],
+          "permission_level": "create"
+        }
+      }
+    ],
+    "Segment Tasks": [
+      {
+        "json": {
+          "output": {
+            "current_datetime": "06/20/2025 10:00 AM",
+            "timezone": "US Central",
+            "tasks": [
+              {
+                "title": "Finalize Client Agreement & Terms",
+                "description": "Review and finalize the agreement and terms of service with Monroe Legal Group, securing necessary signatures.",
+                "due_date": "06/20/2025"
+              },
+              {
+                "title": "Schedule Technical Discovery Call",
+                "description": "Coordinate and schedule the initial technical discovery call with the client's key stakeholders and technical team.",
+                "due_date": "06/21/2025"
+              },
+              {
+                "title": "Conduct Technical Discovery Call",
+                "description": "Hold the initial technical discovery call to gather detailed requirements, understand existing systems, and outline integration points.",
+                "due_date": "06/24/2025"
+              },
+              {
+                "title": "Document Technical Discovery Call Findings",
+                "description": "Compile detailed notes and action items from the technical discovery call into a shared document.",
+                "due_date": "06/25/2025"
+              },
+              {
+                "title": "Request Client Tool Access Credentials",
+                "description": "Send formal requests to Monroe Legal Group for access to their existing tools (Tidio, Typeform, Clio Grow, CRM, etc.) as identified in the discovery call.",
+                "due_date": "06/26/2025"
+              },
+              {
+                "title": "Set Up Internal Project Management Board",
+                "description": "Create the project in ClickUp (or equivalent) for internal team tracking, including task breakdown and assignments.",
+                "due_date": "06/27/2025"
+              },
+              {
+                "title": "Plan Form/Webchat Integrations",
+                "description": "Outline the integration strategy for Tidio, Typeform, and Clio Grow webforms/webchat, including data mapping.",
+                "due_date": "06/28/2025"
+              },
+              {
+                "title": "Implement Tidio Webchat Integration",
+                "description": "Configure and connect Tidio webchat to the unified intake pipeline.",
+                "due_date": "07/02/2025"
+              },
+              {
+                "title": "Implement Typeform Integration",
+                "description": "Configure and connect Typeform to the unified intake pipeline for lead submission.",
+                "due_date": "07/05/2025"
+              },
+              {
+                "title": "Implement Clio Grow Integration",
+                "description": "Configure and connect Clio Grow forms to the unified intake pipeline.",
+                "due_date": "07/09/2025"
+              },
+              {
+                "title": "Develop Unified Webhook Intake Pipeline",
+                "description": "Build the central webhook listener and initial data processing pipeline for all incoming lead sources.",
+                "due_date": "07/14/2025"
+              },
+              {
+                "title": "Set Up Google Sheet for Live Lead Tracking",
+                "description": "Create and configure a Google Sheet to receive and display real-time lead data for monitoring.",
+                "due_date": "07/15/2025"
+              },
+              {
+                "title": "Set Up Airtable Sync for Live Lead Tracking",
+                "description": "Establish an Airtable base and sync mechanism for detailed live tracking and management of incoming leads.",
+                "due_date": "07/17/2025"
+              },
+              {
+                "title": "Develop Human-in-the-Loop Manual Override",
+                "description": "Implement a mechanism for manual review and override of automated lead qualification/routing decisions.",
+                "due_date": "07/22/2025"
+              },
+              {
+                "title": "Implement Email Parsing for Lead Ingestion",
+                "description": "Develop and configure logic to parse incoming emails for lead information and feed it into the intake pipeline.",
+                "due_date": "07/24/2025"
+              },
+              {
+                "title": "Integrate OpenPhone Call Transcript Ingestion",
+                "description": "Set up integration to ingest and process call transcripts from OpenPhone into the lead intake system.",
+                "due_date": "07/29/2025"
+              },
+              {
+                "title": "Develop NLP-Powered Lead Data Extraction Model",
+                "description": "Build and train an NLP model to extract contact info, case type, urgency, and location from raw lead data.",
+                "due_date": "08/01/2025"
+              },
+              {
+                "title": "Define Monroe Legal Group Intake Rubric for GPT-4",
+                "description": "Collaborate with the client to formalize the specific criteria and rubric for AI-powered lead qualification using GPT-4.",
+                "due_date": "08/05/2025"
+              },
+              {
+                "title": "Implement GPT-4 Lead Qualification Layer",
+                "description": "Integrate GPT-4 with the intake pipeline to apply Monroe's rubric for automated lead qualification.",
+                "due_date": "08/08/2025"
+              },
+              {
+                "title": "Develop Lead Scoring and Auto-Tagging System",
+                "description": "Create and implement logic for automatically scoring leads and applying relevant tags based on qualification criteria.",
+                "due_date": "08/12/2025"
+              },
+              {
+                "title": "CRM Integration (Clio, Lawmatics, or Filevine)",
+                "description": "Connect the AI qualification engine to the client's chosen CRM for automatic data transfer and record creation.",
+                "due_date": "08/15/2025"
+              },
+              {
+                "title": "Implement Lead Disqualification Logic",
+                "description": "Configure rules for automatically disqualifying leads (e.g., out-of-state, unsupported case types).",
+                "due_date": "08/19/2025"
+              },
+              {
+                "title": "Develop Dynamic Lead Routing Rules",
+                "description": "Define and implement rules for dynamically routing qualified leads to the appropriate attorney or paralegal based on case type and availability.",
+                "due_date": "08/21/2025"
+              },
+              {
+                "title": "Craft Personalized GPT Follow-up Templates (Email/SMS)",
+                "description": "Design and configure GPT-crafted personalized follow-up email and SMS templates for qualified leads.",
+                "due_date": "08/26/2025"
+              },
+              {
+                "title": "Integrate Online Scheduling Tool (OnceHub or Calendly)",
+                "description": "Connect the system with OnceHub or Calendly to enable instant call booking for qualified leads.",
+                "due_date": "08/28/2025"
+              },
+              {
+                "title": "Implement Case Creation in CRM/Case Management",
+                "description": "Configure the system to automatically create new case records for qualified leads in Clio or the alternate case management system.",
+                "due_date": "09/03/2025"
+              },
+              {
+                "title": "Implement Encrypted PII Handling & Secure API Tokens",
+                "description": "Ensure all Personally Identifiable Information (PII) is handled with encryption and secure API token management.",
+                "due_date": "09/05/2025"
+              },
+              {
+                "title": "Configure Daily Activity Reports (Slack/Email)",
+                "description": "Set up automated daily reports of system activity to be delivered to specified Slack channels or email addresses.",
+                "due_date": "09/09/2025"
+              },
+              {
+                "title": "Configure Weekly Google Slides Summary via SendGrid",
+                "description": "Automate the generation and delivery of weekly Google Slides summary reports via SendGrid.",
+                "due_date": "09/11/2025"
+              },
+              {
+                "title": "Develop Client Portal Update or Secure PDF Share",
+                "description": "Implement functionality for client portal updates via webhook or secure PDF sharing for client access to reports/status.",
+                "due_date": "09/16/2025"
+              },
+              {
+                "title": "Gather 50+ Historical Leads for System Testing",
+                "description": "Collect a dataset of at least 50 historical leads from Monroe Legal Group for comprehensive system testing.",
+                "due_date": "09/17/2025"
+              },
+              {
+                "title": "Conduct Initial System Testing (50+ Historical Leads)",
+                "description": "Run the entire automation system through the collected historical leads to verify accuracy and functionality.",
+                "due_date": "09/22/2025"
+              },
+              {
+                "title": "Review and Refine Edge Case Handling",
+                "description": "Analyze test results to identify and refine system behavior for various edge cases and unusual lead scenarios.",
+                "due_date": "09/24/2025"
+              },
+              {
+                "title": "Review and Improve Disqualification Accuracy",
+                "description": "Evaluate the accuracy of the disqualification logic and make necessary adjustments to minimize false positives/negatives.",
+                "due_date": "09/26/2025"
+              },
+              {
+                "title": "Prepare Client Team Training Materials & SOPs",
+                "description": "Develop comprehensive training documentation, Standard Operating Procedures (SOPs), and user guides for the client team.",
+                "due_date": "10/01/2025"
+              },
+              {
+                "title": "Record Client System Video Walkthroughs",
+                "description": "Create video tutorials demonstrating the system's functionality and key processes for client reference.",
+                "due_date": "10/03/2025"
+              },
+              {
+                "title": "Conduct Client Team Training Session",
+                "description": "Lead a training session with Monroe Legal Group staff to ensure they understand how to use and manage the new system.",
+                "due_date": "10/06/2025"
+              },
+              {
+                "title": "Perform Final System Audit and Go-Live Preparation",
+                "description": "Conduct a final comprehensive audit of the entire system, addressing any last-minute issues before full deployment.",
+                "due_date": "10/08/2025"
+              },
+              {
+                "title": "Full System Deployment and Go-Live Support",
+                "description": "Activate the fully tested and refined Legal Intake Automation System and provide immediate post-launch support.",
+                "due_date": "10/09/2025"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "ClickUp": [
+      {
+        "json": {
+          "id": "86d0n2qbe",
+          "custom_id": null,
+          "custom_item_id": 0,
+          "name": "Finalize Client Agreement & Terms",
+          "text_content": "Review and finalize the agreement and terms of service with Monroe Legal Group, securing necessary signatures.",
+          "description": "Review and finalize the agreement and terms of service with Monroe Legal Group, securing necessary signatures.",
+          "status": {
+            "id": "p90165336374_DCnaeiSB",
+            "status": "to do",
+            "color": "#87909e",
+            "orderindex": 0,
+            "type": "open"
+          },
+          "orderindex": "39908232.00000000000000000000000000000000",
+          "date_created": "1760635013447",
+          "date_updated": "1760635013447",
+          "date_closed": null,
+          "date_done": null,
+          "archived": false,
+          "creator": {
+            "id": 248445374,
+            "username": "Bakaram Pranadir Bhagavath Sena Reddy",
+            "color": "#595d66",
+            "email": "bhagavathreddy143@gmail.com",
+            "profilePicture": null
+          },
+          "assignees": [],
+          "group_assignees": [],
+          "watchers": [
+            {
+              "id": 248445374,
+              "username": "Bakaram Pranadir Bhagavath Sena Reddy",
+              "color": "#595d66",
+              "initials": "BR",
+              "email": "bhagavathreddy143@gmail.com",
+              "profilePicture": null
+            }
+          ],
+          "checklists": [],
+          "tags": [],
+          "parent": null,
+          "top_level_parent": null,
+          "priority": {
+            "color": "#6fddff",
+            "id": "3",
+            "orderindex": "3",
+            "priority": "normal"
+          },
+          "due_date": "1750372200000",
+          "start_date": null,
+          "points": null,
+          "time_estimate": null,
+          "time_spent": 0,
+          "custom_fields": [],
+          "dependencies": [],
+          "linked_tasks": [],
+          "locations": [],
+          "team_id": "90161294082",
+          "url": "https://app.clickup.com/t/86d0n2qbe",
+          "sharing": {
+            "public": false,
+            "public_share_expires_on": null,
+            "public_fields": [
+              "assignees",
+              "priority",
+              "due_date",
+              "content",
+              "comments",
+              "attachments",
+              "customFields",
+              "subtasks",
+              "tags",
+              "checklists",
+              "coverimage"
+            ],
+            "token": null,
+            "seo_optimized": false
+          },
+          "permission_level": "create",
+          "list": {
+            "id": "901611609471",
+            "name": " Ai Onboarding",
+            "access": true
+          },
+          "project": {
+            "id": "90167064732",
+            "name": "Ai | Client Folder",
+            "hidden": false,
+            "access": true
+          },
+          "folder": {
+            "id": "90167064732",
+            "name": "Ai | Client Folder",
+            "hidden": false,
+            "access": true
+          },
+          "space": {
+            "id": "90165336374"
+          }
+        }
+      }
+    ],
+    "Slack | Create Channel": [
+      {
+        "json": {
+          "id": "C09MSK4NHG8",
+          "created": 1760635181,
+          "creator": "U09LG37Q0BH",
+          "is_org_shared": false,
+          "is_im": false,
+          "context_team_id": "T09KSUEULS3",
+          "updated": 1760635181024,
+          "name": "videography_channel",
+          "name_normalized": "videography_channel",
+          "is_channel": true,
+          "is_group": false,
+          "is_mpim": false,
+          "is_private": false,
+          "is_archived": false,
+          "is_general": false,
+          "is_shared": false,
+          "is_ext_shared": false,
+          "unlinked": 0,
+          "is_pending_ext_shared": false,
+          "pending_shared": [],
+          "parent_conversation": null,
+          "purpose": {
+            "value": "",
+            "creator": "",
+            "last_set": 0
+          },
+          "topic": {
+            "value": "",
+            "creator": "",
+            "last_set": 0
+          },
+          "shared_team_ids": [
+            "T09KSUEULS3"
+          ],
+          "pending_connected_team_ids": [],
+          "is_member": true,
+          "last_read": "0000000000.000000",
+          "priority": 0,
+          "previous_names": []
+        }
+      }
+    ]
+  },
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack | Create Channel": {
+      "main": [
+        [
+          {
+            "node": "Slack | Post Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slack | Post Message": {
+      "main": [
+        [
+          {
+            "node": "Send Welcome Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Segment Tasks": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Segment Tasks",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ClickUp": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Slack | Create Channel",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ClickUp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rename Doc": {
+      "main": [
+        [
+          {
+            "node": "Create Main Client Folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Rename Doc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Rename Folder ID": {
+      "main": [
+        [
+          {
+            "node": "ClickUp | Create Folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ClickUp | Create List": {
+      "main": [
+        [
+          {
+            "node": "Segment Tasks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ClickUp | Create Folder": {
+      "main": [
+        [
+          {
+            "node": "ClickUp | Create List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Main Client Folder": {
+      "main": [
+        [
+          {
+            "node": "Rename Folder ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Segment Tasks",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "224507fc-151b-44c4-9591-b07eb48e8319",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "702a7baddd3fdb480012ee407d25716d9e235460dde148c830592c99ca1999a1"
+  },
+  "id": "11JoQeQBBO9Mng2I",
+  "tags": [
+    {
+      "updatedAt": "2025-10-16T14:19:55.490Z",
+      "createdAt": "2025-10-16T14:19:55.490Z",
+      "id": "21fx6ST77HBaV7Yk",
+      "name": "Client Onboarding"
+    },
+    {
+      "updatedAt": "2025-10-16T14:19:55.444Z",
+      "createdAt": "2025-10-16T14:19:55.444Z",
+      "id": "axlIZ5jMbajj08dF",
+      "name": "onboarding"
+    },
+    {
+      "updatedAt": "2025-10-16T14:19:55.470Z",
+      "createdAt": "2025-10-16T14:19:55.470Z",
+      "id": "ngjPZEPKcJjlwUXP",
+      "name": "automation"
+    }
+  ]
+}

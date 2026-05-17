@@ -1,0 +1,479 @@
+{
+  "name": "Proposal generator",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Transcript submission",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Submit your transcript file ",
+              "fieldType": "file",
+              "multipleFiles": false,
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Client Name ",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Date",
+              "fieldType": "date"
+            },
+            {
+              "fieldLabel": "Client Email",
+              "fieldType": "email"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -304,
+        0
+      ],
+      "id": "f5625d84-972e-4c77-bda3-2e450312f01e",
+      "name": "On form submission",
+      "webhookId": "REDACTED"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "binaryPropertyName": "Submit_your_transcript_file_",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        -96,
+        0
+      ],
+      "id": "72294b41-0ed0-40bc-8b05-c81a42ef5063",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get raw extracted text\nlet rawText = items[0].json.text;\n\n// 1. Remove headers, footers, and metadata\nrawText = rawText.replace(/Title:.*?\\n/gi, '');\nrawText = rawText.replace(/Duration:.*?\\n/gi, '');\nrawText = rawText.replace(/Participants:[\\s\\S]*?---\\n/gi, '');\nrawText = rawText.replace(/---\\nEnd of Transcript/gi, '');\nrawText = rawText.replace(/---/g, '');\n\n// 2. Fix PDF line breaks (join broken sentences)\nrawText = rawText.replace(/(\\w)\\n(\\w)/g, '$1 $2');\n\n// 3. Normalize speaker labels (ensure \"Speaker: sentence\")\nrawText = rawText.replace(/\\n?(Pranadir|Alex):\\s*/g, '\\n$1: ');\n\n// 4. Remove excessive newlines and spaces\nrawText = rawText.replace(/\\n{2,}/g, '\\n');\nrawText = rawText.trim();\n\n// 5. Optional: final formatting for AI\nconst normalizedTranscript = rawText;\n\nreturn [\n  {\n    json: {\n      normalizedTranscript\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        96,
+        0
+      ],
+      "id": "7c1c25e6-4ba2-4862-855a-80dd75d042b2",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        304,
+        224
+      ],
+      "id": "2880fd85-cf85-4a08-8c13-412e64919043",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Extract structured information from the following normalized transcript.\n\nTranscript:\n{{ $json.normalizedTranscript }}\n",
+        "options": {
+          "systemMessage": "You are an AI extraction agent.\n\nYour task is to extract structured business information from a normalized discovery or sales call transcript.\n\nYou must follow these rules strictly:\n\nGENERAL RULES\n- Output ONLY valid JSON.\n- Do NOT include markdown.\n- Do NOT include backticks.\n- Do NOT include explanations or extra text.\n- Do NOT invent information.\n- Do NOT assume missing details.\n- If information is missing, return null.\n- Arrays must always be arrays. Use [] if empty.\n- Always return ALL fields defined in the output structure.\n- Use simple strings. No additional nesting.\n- The output must be directly machine-parseable.\n\nYou are NOT writing a proposal.\nYou are NOT summarizing for humans.\nYou are ONLY extracting structured data for automation.\n\nOUTPUT STRUCTURE (YOU MUST FOLLOW THIS EXACTLY)\n\n{\n  \"client_profile\": {\n    \"business_type\": string | null,\n    \"industry\": string | null,\n    \"company_size_signal\": string | null,\n    \"geography\": string | null\n  },\n  \"current_state\": {\n    \"current_processes\": string[],\n    \"tools_or_systems_mentioned\": string[],\n    \"manual_work_areas\": string[]\n  },\n  \"pain_points\": {\n    \"pain\": string,\n    \"context\": string,\n    \"frequency_or_scale\": string | null\n  }[],\n  \"lead_and_volume_signals\": {\n    \"monthly_lead_volume\": string | null,\n    \"lead_sources\": string[],\n    \"follow_up_process\": string | null\n  },\n  \"automation_opportunities\": {\n    \"area\": string,\n    \"current_state\": string,\n    \"desired_outcome\": string\n  }[],\n  \"success_criteria\": string[],\n  \"constraints_and_preferences\": {\n    \"complexity_tolerance\": string | null,\n    \"tools_resistance\": string | null,\n    \"budget_signals\": string | null\n  },\n  \"decision_signals\": {\n    \"decision_maker_present\": boolean | null,\n    \"urgency_level\": string | null,\n    \"buying_intent_signal\": string | null\n  },\n  \"notable_quotes\": string[]\n}\n\nFEW-SHOT EXAMPLE\n\nINPUT TRANSCRIPT:\nConsultant: How are leads handled today?\nClient: We get leads from our website and LinkedIn. Someone checks emails manually.\nConsultant: Any issues?\nClient: Yes, follow-ups are inconsistent and some leads slip through.\n\nEXPECTED OUTPUT:\n{\n  \"client_profile\": {\n    \"business_type\": \"Service business\",\n    \"industry\": null,\n    \"company_size_signal\": null,\n    \"geography\": null\n  },\n  \"current_state\": {\n    \"current_processes\": [\n      \"Manual handling of inbound leads\"\n    ],\n    \"tools_or_systems_mentioned\": [\n      \"Email\"\n    ],\n    \"manual_work_areas\": [\n      \"Lead follow-ups\"\n    ]\n  },\n  \"pain_points\": [\n    {\n      \"pain\": \"Inconsistent follow-ups\",\n      \"context\": \"Leads are handled manually and some are missed\",\n      \"frequency_or_scale\": null\n    }\n  ],\n  \"lead_and_volume_signals\": {\n    \"monthly_lead_volume\": null,\n    \"lead_sources\": [\n      \"Website\",\n      \"LinkedIn\"\n    ],\n    \"follow_up_process\": \"Manual and inconsistent\"\n  },\n  \"automation_opportunities\": [\n    {\n      \"area\": \"Lead follow-up\",\n      \"current_state\": \"Manual email checking\",\n      \"desired_outcome\": \"Consistent lead follow-up\"\n    }\n  ],\n  \"success_criteria\": [],\n  \"constraints_and_preferences\": {\n    \"complexity_tolerance\": null,\n    \"tools_resistance\": null,\n    \"budget_signals\": null\n  },\n  \"decision_signals\": {\n    \"decision_maker_present\": null,\n    \"urgency_level\": null,\n    \"buying_intent_signal\": null\n  },\n  \"notable_quotes\": [\n    \"Some leads slip through.\"\n  ]\n}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        304,
+        0
+      ],
+      "id": "627eaf0a-2862-49fc-b2a0-15020f8ecdda",
+      "name": "Extraction Agent",
+      "retryOnFail": false,
+      "maxTries": 2
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get raw JSON string from AI Agent\nconst raw = items[0].json.output;\n\n// Parse JSON string safely\nconst parsed = JSON.parse(raw);\n\n// HARD NORMALIZATION (remove reasoning drift)\nparsed.decision_signals.urgency_level =\n  parsed.decision_signals.urgency_level?.split(';')[0] || null;\n\nparsed.decision_signals.buying_intent_signal =\n  parsed.decision_signals.buying_intent_signal?.split(';')[0] || null;\n\nparsed.constraints_and_preferences.complexity_tolerance =\n  parsed.constraints_and_preferences.complexity_tolerance?.split(';')[0] || null;\n\nparsed.constraints_and_preferences.tools_resistance =\n  parsed.constraints_and_preferences.tools_resistance?.split(';')[0] || null;\n\n// Optional: enforce nulls if inferred\nif (parsed.client_profile.company_size_signal === \"Growing quickly\") {\n  parsed.client_profile.company_size_signal = null;\n}\n\nreturn [{ json: parsed }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        656,
+        0
+      ],
+      "id": "aed6e0fd-3e25-4284-9174-4d94e614bd60",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Using the structured client data below, generate proposal content for each placeholder.\n\nStructured client data:\n{{ JSON.stringify($json, null, 2) }}\n\nRemember:\n- Fill each placeholder based only on the data provided.\n- Follow the required output format exactly.\n",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are a proposal writing agent for ProfitPath.AI.\n\nYour job is to generate content ONLY for predefined proposal template placeholders.\nYou do NOT change structure.\nYou do NOT invent services.\nYou do NOT add pricing unless explicitly provided.\nYou do NOT reference transcripts or conversations directly.\n\nYou will receive structured client data extracted from a discovery call.\nYou must transform that data into clear, professional proposal content.\n\nSTRICT RULES:\n- Write in a professional, concise consulting tone.\n- Use simple, clear language. No jargon.\n- Do not oversell. Be practical and grounded.\n- Do not repeat the same idea across sections.\n- If data is missing, keep the section high-level and neutral.\n- Do NOT include headings or numbering.\n- Do NOT include markdown.\n- Do NOT include explanations.\n\nOUTPUT RULES:\n- Output must be valid JSON.\n- Output must include ALL placeholders listed.\n- Output values must be plain text strings.\n- Do NOT include any text outside the JSON.\n\nYou are filling a Google Docs template.\nYour output will be injected into placeholders using automation.\n\nREQUIRED OUTPUT FORMAT:\n\n{\n  \"OVERVIEW\": \"\",\n  \"PAIN_POINTS\": \"\",\n  \"SOLUTION\": \"\",\n  \"SCOPE\": \"\",\n  \"OUTCOMES\": \"\",\n  \"IMPLEMENTATION\": \"\",\n  \"TIMELINE\": \"\",\n  \"NEXT_STEPS\": \"\"\n}\n\n\nexample output :\n\n{\n  \"OVERVIEW\": \"This proposal outlines a practical automation setup designed to improve lead handling and client onboarding while keeping systems simple and reliable.\",\n  \"PAIN_POINTS\": \"Leads currently arrive from multiple channels and are handled manually, which has resulted in inconsistent follow-ups and some leads being missed. Client onboarding also requires repeated manual steps, creating unnecessary administrative overhead.\",\n  \"SOLUTION\": \"We propose implementing a centralized automation system that captures inbound leads, ensures consistent follow-ups, and streamlines client onboarding without adding operational complexity.\",\n  \"SCOPE\": \"Centralized lead intake automation\\nAutomated follow-up workflows\\nClient onboarding automation for post-deal setup\",\n  \"OUTCOMES\": \"Faster response times to new leads\\nNo leads falling through the cracks\\nReduced manual administrative work\\nSmoother client onboarding experience\",\n  \"IMPLEMENTATION\": \"The implementation will focus on integrating automation into existing tools and workflows, with minimal disruption. Each component will be tested and refined before going live.\",\n  \"TIMELINE\": \"Initial setup and configuration: 1\u20132 weeks\\nTesting and adjustments: 1 week\\nFinal rollout: 1 week\",\n  \"NEXT_STEPS\": \"Confirm the scope outlined above. Once approved, we will finalize requirements and begin implementation.\"\n}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        864,
+        0
+      ],
+      "id": "02a80bd4-0f92-4c33-a1fb-675419e3f0e2",
+      "name": "Praposal Generator"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        736,
+        208
+      ],
+      "id": "0edef703-62d8-43af-9162-029a07aa89f2",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"OVERVIEW\": \"\",\n  \"PAIN_POINTS\": \"\",\n  \"SOLUTION\": \"\",\n  \"SCOPE\": \"\",\n  \"OUTCOMES\": \"\",\n  \"IMPLEMENTATION\": \"\",\n  \"TIMELINE\": \"\",\n  \"NEXT_STEPS\": \"\"\n}\n"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1040,
+        208
+      ],
+      "id": "d2bd23c6-20cf-428c-a91a-885a5c55f247",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "operation": "copy",
+        "fileId": {
+          "__rl": true,
+          "value": "1Tum7qbtiFkUsLDtq1iwBA9JCCCHOq4oVi99X8cb4JaE",
+          "mode": "list",
+          "cachedResultName": "ProfitPath \u2013 Automation Proposal Template",
+          "cachedResultUrl": "https://docs.google.com/document/d/1Tum7qbtiFkUsLDtq1iwBA9JCCCHOq4oVi99X8cb4JaE/edit?usp=drivesdk"
+        },
+        "name": "=Proposal ",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1216,
+        0
+      ],
+      "id": "9ee35538-83b4-4e9a-889d-4ef890c3ce97",
+      "name": "Copy file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentURL": "={{ $json.id }}",
+        "actionsUi": {
+          "actionFields": [
+            {
+              "action": "replaceAll",
+              "text": "{{OVERVIEW}}",
+              "replaceText": "={{ $('Praposal Generator').item.json.output.OVERVIEW }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{PAIN_POINTS}}",
+              "replaceText": "={{ $('Praposal Generator').item.json.output.PAIN_POINTS }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{SOLUTION}}",
+              "replaceText": "={{ $('Praposal Generator').item.json.output.SOLUTION }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{SCOPE}}",
+              "replaceText": "={{ $('Praposal Generator').item.json.output.SCOPE }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{OUTCOMES}}",
+              "replaceText": "={{ $('Praposal Generator').item.json.output.OUTCOMES }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{IMPLEMENTATION}}",
+              "replaceText": "={{ $('Praposal Generator').item.json.output.IMPLEMENTATION }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{TIMELINE}}",
+              "replaceText": "={{ $('Praposal Generator').item.json.output.TIMELINE }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{NEXT_STEPS}}",
+              "replaceText": "={{ $('Praposal Generator').item.json.output.NEXT_STEPS }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{CLIENT_NAME}}",
+              "replaceText": "={{ $('On form submission').item.json['Client Name '] }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": " {{DATE}}",
+              "replaceText": "={{ $('On form submission').item.json.Date }}"
+            },
+            {
+              "action": "replaceAll",
+              "text": "{{Email}}",
+              "replaceText": "={{ $('On form submission').item.json['Client Email'] }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleDocs",
+      "typeVersion": 2,
+      "position": [
+        1632,
+        0
+      ],
+      "id": "85912f60-036f-46e5-aa86-62cf04eae26a",
+      "name": "Update a document",
+      "credentials": {
+        "googleDocsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "pranadirbhagavathsenareddy@gmail.com",
+        "subject": "your praposal draft",
+        "emailType": "text",
+        "message": "=Hey this is the draft for your praposal for the client :{{ $('On form submission').item.json['Client Name '] }}\n\nhere is the doc url: https://docs.google.com/document/d/{{ $json.documentId }}/edit\n\n\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1840,
+        0
+      ],
+      "id": "d42975ef-9ff6-46d2-a17d-d48763c90339",
+      "name": "Send a message",
+      "webhookId": "REDACTED",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "share",
+        "fileId": {
+          "__rl": true,
+          "value": "={{$node[\"Copy file\"].json[\"id\"]}}\n",
+          "mode": "id"
+        },
+        "permissionsUi": {
+          "permissionsValues": {
+            "role": "writer",
+            "type": "anyone"
+          }
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        1424,
+        0
+      ],
+      "id": "18a3f623-7e95-445f-bfa1-fdca00de5480",
+      "name": "Share file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Extraction Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Extraction Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraction Agent": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Praposal Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Praposal Generator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Praposal Generator": {
+      "main": [
+        [
+          {
+            "node": "Copy file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Praposal Generator",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Copy file": {
+      "main": [
+        [
+          {
+            "node": "Share file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a document": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Share file": {
+      "main": [
+        [
+          {
+            "node": "Update a document",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b490d6d4-ba9b-45d5-8492-3e15255998ce",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "702a7baddd3fdb480012ee407d25716d9e235460dde148c830592c99ca1999a1"
+  },
+  "id": "06zGE113lVXbjCLQ",
+  "tags": []
+}

@@ -1,41 +1,92 @@
 {
-  "name": "Hr Shortlisting workflow - FINAL CLEANED",
+  "name": "Hr Shortlisting workflow",
   "nodes": [
     {
       "parameters": {
         "formTitle": "Job Application",
         "formFields": {
           "values": [
-            { "fieldLabel": "Name", "requiredField": true },
-            { "fieldLabel": "Email Adress", "fieldType": "email", "requiredField": true },
-            { "fieldLabel": "Submit your Cv", "fieldType": "file", "acceptFileTypes": ".pdf", "requiredField": true }
+            {
+              "fieldLabel": "Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email Adress",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Submit your Cv",
+              "fieldType": "file",
+              "acceptFileTypes": ".pdf",
+              "requiredField": true
+            }
           ]
-        }
+        },
+        "options": {}
       },
       "type": "n8n-nodes-base.formTrigger",
       "typeVersion": 2.5,
-      "position": [ 0, 0 ],
-      "id": "node-form-trigger",
-      "name": "On form submission"
+      "position": [
+        0,
+        0
+      ],
+      "id": "a3875c05-2acc-405c-8d6f-2cec7fb7efba",
+      "name": "On form submission",
+      "webhookId": "REDACTED"
     },
     {
       "parameters": {
         "inputDataFieldName": "Submit_your_Cv",
         "name": "={{ $json.Name }} resume",
-        "driveId": { "__rl": true, "value": "My Drive", "mode": "list" },
-        "folderId": { "__rl": true, "value": "REPLACE_WITH_YOUR_FOLDER_ID", "mode": "list" }
+        "driveId": {
+          "__rl": true,
+          "value": "My Drive",
+          "mode": "list",
+          "cachedResultName": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1Dai6EKaSn0xscrFQrkCbsaSSgEhnkgB-",
+          "mode": "list",
+          "cachedResultName": "n8n files",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1Dai6EKaSn0xscrFQrkCbsaSSgEhnkgB-"
+        },
+        "options": {}
       },
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
-      "position": [ 208, 0 ],
-      "id": "node-upload-file",
-      "name": "Upload file"
+      "position": [
+        208,
+        0
+      ],
+      "id": "97dc9283-7805-4bcd-8529-c05a2afd833b",
+      "name": "Upload file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
     },
     {
       "parameters": {
         "operation": "create",
-        "base": { "__rl": true, "value": "REPLACE_WITH_AIRTABLE_BASE_ID", "mode": "list" },
-        "table": { "__rl": true, "value": "REPLACE_WITH_AIRTABLE_TABLE_ID", "mode": "list" },
+        "base": {
+          "__rl": true,
+          "value": "appScttsEWhcgRske",
+          "mode": "list",
+          "cachedResultName": "Hr automation",
+          "cachedResultUrl": "https://airtable.com/appScttsEWhcgRske"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblKmkwT96a9XNDrA",
+          "mode": "list",
+          "cachedResultName": "Table 1",
+          "cachedResultUrl": "https://airtable.com/appScttsEWhcgRske/tblKmkwT96a9XNDrA"
+        },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
@@ -43,158 +94,717 @@
             "Candidate Name": "={{ $('On form submission').item.json.Name }}",
             "Email": "={{ $('On form submission').item.json['Email Adress'] }}",
             "Select": "Pending review"
-          }
-        }
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Candidate Name",
+              "displayName": "Candidate Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Phone number",
+              "displayName": "Phone number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Application Date",
+              "displayName": "Application Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Resume Url",
+              "displayName": "Resume Url",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Select",
+              "displayName": "Select",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Pending review",
+                  "value": "Pending review"
+                },
+                {
+                  "name": "Shortlisted",
+                  "value": "Shortlisted"
+                },
+                {
+                  "name": "Rejected",
+                  "value": "Rejected"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
       },
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.1,
-      "position": [ 416, 0 ],
-      "id": "node-airtable-create",
-      "name": "Create a record"
+      "position": [
+        416,
+        0
+      ],
+      "id": "734ee633-ea0a-4a2a-b399-4417d3b18f93",
+      "name": "Create a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.1,
+      "position": [
+        832,
+        0
+      ],
+      "id": "52502b95-1c3f-4d1e-9f0b-6de4b49a01c7",
+      "name": "Extract from File"
     },
     {
       "parameters": {
         "operation": "download",
-        "fileId": { "__rl": true, "value": "={{ $('Upload file').item.json.id }}", "mode": "id" }
+        "fileId": {
+          "__rl": true,
+          "value": "={{ $('Upload file').item.json.id }}",
+          "mode": "id"
+        },
+        "options": {}
       },
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
-      "position": [ 624, 0 ],
-      "id": "node-download-file",
-      "name": "Download file"
-    },
-    {
-      "parameters": { "operation": "pdf" },
-      "type": "n8n-nodes-base.extractFromFile",
-      "typeVersion": 1.1,
-      "position": [ 832, 0 ],
-      "id": "node-extract-pdf",
-      "name": "Extract from File"
+      "position": [
+        624,
+        0
+      ],
+      "id": "7acbce12-a9d1-4570-9031-a197d5a72294",
+      "name": "Download file",
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
     },
     {
       "parameters": {
         "text": "={{ $json.text }}",
         "schemaType": "fromJson",
-        "jsonSchemaExample": "{\"name\":\"\",\"skills\":[],\"experience_years\":0}"
+        "jsonSchemaExample": "{\n  \"name\": \"\",\n  \"email\": \"\",\n  \"phone\": \"\",\n  \"linkedin\": \"\",\n  \"portfolio\": \"\",\n  \"current_role\": \"\",\n  \"skills\": [],\n  \"projects\":[],\n  \"experience_years\": 0,\n  \"education\": \"\",\n  \"university\": \"\",\n  \"graduation_year\": \"\",\n  \"location\": \"\",\n  \"summary\": \"\"\n}",
+        "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.informationExtractor",
       "typeVersion": 1.2,
-      "position": [ 1040, 0 ],
-      "id": "node-info-extractor",
+      "position": [
+        1040,
+        0
+      ],
+      "id": "562572d6-64ea-42b6-9cec-3db1f4f09a3e",
       "name": "Information Extractor"
     },
     {
-      "parameters": {},
+      "parameters": {
+        "options": {}
+      },
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
-      "position": [ 976, 208 ],
-      "id": "node-gemini-model-1",
-      "name": "Google Gemini Chat Model"
+      "position": [
+        976,
+        208
+      ],
+      "id": "1e19ce7a-6b51-4147-adf8-43a01557699f",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
     },
     {
       "parameters": {
         "mode": "raw",
-        "jsonOutput": "{\"job_title\": \"AI & Automation Engineer\", \"required_skills\": [\"n8n\", \"APIs\"]}"
+        "jsonOutput": "{\n  \"job_title\": \"AI & Automation Engineer\",\n  \"location\": \"Remote / Hybrid\",\n  \"experience_required\": \"3-5 years\",\n  \"job_summary\": \"Design and implement intelligent automation systems that streamline business operations. Work on integrating AI models, building workflow automation pipelines, and connecting various business tools through APIs and webhooks.\",\n  \"required_skills\": [\n    \"n8n workflow automation\",\n    \"REST APIs\",\n    \"Webhooks\",\n    \"Event-driven architecture\",\n    \"AI/LLM integration (OpenAI, Claude)\",\n    \"JavaScript or Python\",\n    \"CRM integrations\",\n    \"JSON data handling\"\n  ],\n  \"preferred_skills\": [\n    \"RAG systems\",\n    \"Voice AI (Vapi, Bland AI)\",\n    \"Google Workspace API\",\n    \"ClickUp API\",\n    \"Slack integrations\",\n    \"Airtable\"\n  ],\n  \"key_responsibilities\": [\n    \"Design automation workflows using n8n or similar platforms\",\n    \"Integrate AI models into business processes\",\n    \"Build RAG systems for document-based AI applications\",\n    \"Develop CRM integrations and lead automation\",\n    \"Create webhook-driven architectures\",\n    \"Implement voice AI solutions\",\n    \"Handle error management and system monitoring\"\n  ],\n  \"minimum_requirements\": {\n    \"experience_years\": 3,\n    \"education\": \"Bachelor's in Computer Science or related field\",\n    \"must_have_tools\": [\"n8n\", \"OpenAI API\", \"CRM platform\"]\n  }\n}",
+        "options": {}
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [ 1392, 0 ],
-      "id": "node-job-details",
+      "position": [
+        1392,
+        0
+      ],
+      "id": "52c7fbcb-ebcf-4833-b05b-a349f6ce47b0",
       "name": "Edit Fields"
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Evaluate candidate: {{ $('Information Extractor').item.json.output.name }} against Job: {{ $json.job_title }}"
+        "text": "=Evaluate this candidate against the job requirements and provide a detailed assessment.\n\nCANDIDATE PROFILE:\nName:{{ $('Information Extractor').item.json.output.name }}\nSkills:{{ $('Information Extractor').item.json.output.skills }}\nProjects:{{ $('Information Extractor').item.json.output.projects }}\nEducation:{{ $('Information Extractor').item.json.output.education }}\nexperience:{{ $('Information Extractor').item.json.output.experience_years }}\n\n\nJOB DESCRIPTION:\nJob title:{{ $json.job_title }}\nlocation:{{ $json.location }}\nexperience:{{ $json.experience_required }}\njob summery:{{ $json.job_summary }}\nrequired skills:{{ $json.required_skills }}\npreffered skills:{{ $json.preferred_skills }}\nKey responsibilities:{{ $json.key_responsibilities }}\nMust Have tools:{{ $json.minimum_requirements.must_have_tools }}\n\nAlways output the Decision As \"Shortlisted\" or \"Rejected\" \n\nAnalyze the candidate and return your evaluation in this exact JSON format:\n{\n  \"score\": 85,\n  \"decision\": \"Shortlist\",\n  \"strengths\": [\"List 3-5 key strengths that match the role\"],\n  \"gaps\": [\"List 2-4 missing skills or experience gaps\"],\n  \"summary\": \"2-3 sentence overall assessment\",\n  \"experience_match\": \"Strong/Moderate/Weak\",\n  \"skills_match_percentage\": 75\n}\n\nScoring Guidelines:\n- 80-100: Excellent match, strong shortlist\n- 60-79: Good match, consider for interview\n- 40-59: Partial match, review carefully\n- 0-39: Poor match, likely reject",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are an expert HR recruiter and talent evaluator. Your job is to compare a candidate's profile against a job description and provide an objective assessment.\n\nRules:\n- Be fair and objective in your evaluation\n- Consider both technical skills match and overall experience\n- Identify specific strengths and gaps\n- Provide a numerical score from 0-100\n- Base your recommendation on the score and requirements match"
+        }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 3.1,
-      "position": [ 1600, 0 ],
-      "id": "node-ai-agent",
+      "position": [
+        1600,
+        0
+      ],
+      "id": "d0ef34b6-9afd-40a1-a254-a0b740c80043",
       "name": "AI Agent"
     },
     {
-      "parameters": {},
+      "parameters": {
+        "options": {}
+      },
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
-      "position": [ 1472, 208 ],
-      "id": "node-gemini-model-2",
-      "name": "Google Gemini Chat Model1"
+      "position": [
+        1472,
+        208
+      ],
+      "id": "5c5ecc3c-ef30-4ad9-b680-917983ce228a",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
     },
     {
-      "parameters": { "jsonSchemaExample": "{\"score\":0,\"decision\":\"\"}" },
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"score\": 0,\n  \"decision\": \"\",\n  \"strengths\": \"\",\n  \"gaps\": \"\",\n  \"summary\": \"\",\n  \"experience_match\": \"\",\n  \"skills_match_percentage\": 0 \n}"
+      },
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
-      "position": [ 1776, 208 ],
-      "id": "node-output-parser",
+      "position": [
+        1776,
+        208
+      ],
+      "id": "c6a26b61-cc57-41ca-b0cf-00a756ab72c6",
       "name": "Structured Output Parser"
     },
     {
       "parameters": {
         "operation": "upsert",
-        "base": { "__rl": true, "value": "REPLACE_WITH_BASE_ID", "mode": "list" },
-        "table": { "__rl": true, "value": "REPLACE_WITH_TABLE_ID", "mode": "list" },
+        "base": {
+          "__rl": true,
+          "value": "appScttsEWhcgRske",
+          "mode": "list",
+          "cachedResultName": "Hr automation",
+          "cachedResultUrl": "https://airtable.com/appScttsEWhcgRske"
+        },
+        "table": {
+          "__rl": true,
+          "value": "tblKmkwT96a9XNDrA",
+          "mode": "list",
+          "cachedResultName": "Table 1",
+          "cachedResultUrl": "https://airtable.com/appScttsEWhcgRske/tblKmkwT96a9XNDrA"
+        },
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
             "id": "={{ $('Create a record').item.json.id }}",
-            "Select": "={{ $json.output.decision }}"
+            "Phone number": "={{ $('Information Extractor').item.json.output.phone }}",
+            "Select": "={{ $json.output.decision }}",
+            "Candidate Summery": "={{ $json.output.summary }}",
+            "Strengths": "={{ $json.output.strengths }}",
+            "Gaps": "={{ $json.output.gaps }}",
+            "Score": "={{ $json.output.score }}"
           },
-          "matchingColumns": [ "id" ]
-        }
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": true,
+              "removed": false
+            },
+            {
+              "id": "Candidate Name",
+              "displayName": "Candidate Name",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Phone number",
+              "displayName": "Phone number",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Application Date",
+              "displayName": "Application Date",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "dateTime",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Resume Url",
+              "displayName": "Resume Url",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": true
+            },
+            {
+              "id": "Select",
+              "displayName": "Select",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "options",
+              "options": [
+                {
+                  "name": "Pending review",
+                  "value": "Pending review"
+                },
+                {
+                  "name": "Shortlisted",
+                  "value": "Shortlisted"
+                },
+                {
+                  "name": "Rejected",
+                  "value": "Rejected"
+                }
+              ],
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Candidate Summery",
+              "displayName": "Candidate Summery",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Strengths",
+              "displayName": "Strengths",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Gaps",
+              "displayName": "Gaps",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "Score",
+              "displayName": "Score",
+              "required": false,
+              "defaultMatch": false,
+              "canBeUsedToMatch": true,
+              "display": true,
+              "type": "number",
+              "readOnly": false,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
       },
       "type": "n8n-nodes-base.airtable",
       "typeVersion": 2.1,
-      "position": [ 1952, 0 ],
-      "id": "node-airtable-upsert",
-      "name": "Create or update a record"
+      "position": [
+        1952,
+        0
+      ],
+      "id": "41314e17-850e-45c5-9093-6d956f496de0",
+      "name": "Create or update a record",
+      "credentials": {
+        "airtableTokenApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
     },
     {
       "parameters": {
         "conditions": {
-          "options": { "caseSensitive": true },
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
           "conditions": [
-            { "leftValue": "={{ $json.fields.Select }}", "rightValue": "Shortlisted", "operator": { "type": "string", "operation": "equals" } }
-          ]
-        }
+            {
+              "id": "d2094f17-5be6-4e67-bf81-460ebfe89517",
+              "leftValue": "={{ $json.fields.Select }}",
+              "rightValue": "Shortlisted",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
-      "position": [ 2160, 0 ],
-      "id": "node-if-logic",
+      "position": [
+        2160,
+        0
+      ],
+      "id": "a6e8ecf2-cf65-4c78-ac23-3dfc4c8d6184",
       "name": "If"
     },
     {
-      "parameters": { "subject": "Resume shortlisted", "message": "Dear Candidate..." },
+      "parameters": {
+        "sendTo": "={{ $json.fields.Email }}",
+        "subject": "Resume shortlisted",
+        "emailType": "text",
+        "message": "=\"Dear {{ $json.fields['Candidate Name'] }}\n\nWe're pleased to inform you that you've been shortlisted for the {{ $('Edit Fields').item.json.job_title }} position.\n\nWe'll be in touch within 2-3 business days to schedule your interview.\n\nBest regards,\n",
+        "options": {
+          "appendAttribution": false
+        }
+      },
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
-      "position": [ 2368, -80 ],
-      "id": "node-gmail-shortlist",
-      "name": "Send a message"
+      "position": [
+        2368,
+        -80
+      ],
+      "id": "ed0da8dd-8fec-424c-91e4-f5cd653e3a86",
+      "name": "Send a message",
+      "webhookId": "REDACTED",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
     },
     {
-      "parameters": { "subject": "Application Rejection", "message": "Dear Candidate..." },
+      "parameters": {
+        "sendTo": "={{ $json.fields.Email }}",
+        "subject": "Application Rejection",
+        "emailType": "text",
+        "message": "=\"Dear {{ $json.fields['Candidate Name'] }}\n\nThank you for your interest in the {{ $('Edit Fields').item.json.job_title }} position. After careful review, we've decided to move forward with candidates whose experience more closely aligns with our current needs.\n\nWe encourage you to apply for future opportunities that match your profile.\n\nBest regards,",
+        "options": {
+          "appendAttribution": false
+        }
+      },
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
-      "position": [ 2368, 96 ],
-      "id": "node-gmail-rejection",
-      "name": "Send a message1"
+      "position": [
+        2368,
+        96
+      ],
+      "id": "9b53c26b-16f6-4354-8162-c5423578165d",
+      "name": "Send a message1",
+      "webhookId": "REDACTED",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
     }
   ],
-  "connections": {
-    "On form submission": { "main": [[ { "node": "Upload file", "type": "main", "index": 0 } ]] },
-    "Upload file": { "main": [[ { "node": "Create a record", "type": "main", "index": 0 } ]] },
-    "Create a record": { "main": [[ { "node": "Download file", "type": "main", "index": 0 } ]] },
-    "Download file": { "main": [[ { "node": "Extract from File", "type": "main", "index": 0 } ]] },
-    "Extract from File": { "main": [[ { "node": "Information Extractor", "type": "main", "index": 0 } ]] },
-    "Google Gemini Chat Model": { "ai_languageModel": [[ { "node": "Information Extractor", "type": "ai_languageModel", "index": 0 } ]] },
-    "Information Extractor": { "main": [[ { "node": "Edit Fields", "type": "main", "index": 0 } ]] },
-    "Edit Fields": { "main": [[ { "node": "AI Agent", "type": "main", "index": 0 } ]] },
-    "Google Gemini Chat Model1": { "ai_languageModel": [[ { "node": "AI Agent", "type": "ai_languageModel", "index": 0 } ]] },
-    "Structured Output Parser": { "ai_outputParser": [[ { "node": "AI Agent", "type": "ai_outputParser", "index": 0 } ]] },
-    "AI Agent": { "main": [[ { "node": "Create or update a record", "type": "main", "index": 0 } ]] },
-    "Create or update a record": { "main": [[ { "node": "If", "type": "main", "index": 0 } ]] },
-    "If": { "main": [[ { "node": "Send a message", "type": "main", "index": 0 } ], [ { "node": "Send a message1", "type": "main", "index": 0 } ]] }
+  "pinData": {
+    "On form submission": [
+      {
+        "json": {
+          "Name": "Pranadir",
+          "Email Adress": "pranadirbhagavathsenareddy@gmail.com",
+          "Submit your Cv": [
+            {
+              "filename": "Untitled design.pdf",
+              "mimetype": "application/pdf",
+              "size": 117944
+            }
+          ],
+          "submittedAt": "2026-02-14T18:10:39.104+05:30",
+          "formMode": "test"
+        },
+        "binary": {
+          "Submit_your_Cv": {
+            "mimeType": "application/pdf",
+            "fileType": "pdf",
+            "fileExtension": "pdf",
+            "data": "filesystem-v2",
+            "fileName": "Untitled design.pdf",
+            "id": "filesystem-v2:workflows/3Sq5AaOUum8BF-3EXT96B/executions/temp/binary_data/59fd1c66-e5a7-4de5-a0bd-b7100f7165e1",
+            "fileSize": "118 kB"
+          }
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
   },
-  "meta": { "instanceId": "REPLACE_WITH_INSTANCE_ID" }
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Create a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a record": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Create or update a record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create or update a record": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "91927e08-d466-4f3a-8abb-4fc5220e8a9f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "702a7baddd3fdb480012ee407d25716d9e235460dde148c830592c99ca1999a1"
+  },
+  "id": "3Sq5AaOUum8BF-3EXT96B",
+  "tags": []
 }

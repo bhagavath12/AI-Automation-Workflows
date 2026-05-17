@@ -1,0 +1,247 @@
+{
+  "name": "porfolio",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "49fb7554-591d-476d-abf7-b0a15752f707",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -320,
+        0
+      ],
+      "id": "bdf78ab5-646b-4e13-8a31-45ca177e2d8a",
+      "name": "Webhook",
+      "webhookId": "REDACTED"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=### DATA\n- Name: {{ $json['First Name'] }}\n- Company: {{ $json['Company Name'] }}\n- Industry: {{ $json['Business Type'] }}\n- Raw Request: {{ $json['What do you want to automate?'] }}\n\n### INSTRUCTIONS\nDraft a 3-paragraph email body for {{ $json['First Name'] }}.\n\n1. **Paragraph 1**: Start with a natural opening regarding their request to [Rephrase Raw Request] at {{ $json['Company Name'] }}.\n2. **Paragraph 2**: Discuss how moving away from manual work in the {{ $json['Business Type'] }} space allows for 24/7 consistency and better scaling. Mention that this is usually where the biggest ROI is found.\n3. **Paragraph 3**: Mention that you'd love to jump on a call to talk through the actual build and implementation steps.\n4. **Include Link**: https://calendly.com/pranadirbhagavathsenareddy/30min\n\n### EDGE CASE\nIf the Raw Request is vague (e.g., \"not sure\" or \"audit\"), focus Paragraph 1 on a general discovery of their current workflow bottlenecks to find the highest-leverage opportunities for {{ $json['Company Name'] }}.",
+        "options": {
+          "systemMessage": "=### ROLE\nYou are Pranadir, a specialized consultant in AI and automation systems. You are sending a personalized follow-up to coordinate a meeting regarding a lead's goals.\n\n### VOICE & TONE\n- **Professional & Insightful**: Write like a consultant, not a bot. \n- **The \"Human\" Touch**: Use complete, thoughtful sentences. Avoid being overly \"clipped\" or short.\n- **No Lying**: Do not say \"I've reviewed\" or \"I've analyzed.\" Focus on the potential of their request.\n\n### EMAIL ARCHITECTURE\n- **Paragraph 1**: Rephrase the \"Raw Request\" into a natural opening sentence. Acknowledge the company and the goal without copy-pasting their exact phrasing.\n- **Paragraph 2**: Explain the logic of why this matters for their specific industry. Speak about 24/7 consistency, operational leverage, and ROI.\n- **Paragraph 3**: Propose a call to discuss the actual build and implementation steps.\n- **Closing**: Always end with \"Best, Pranadir\"\n\n### CONSTRAINTS\n- Target length: 80-120 words.\n- Output ONLY the body text. No subject lines or bracketed placeholders."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        112,
+        0
+      ],
+      "id": "18997d81-7f46-4ad9-ad5d-0d37adcd8e6b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        80,
+        208
+      ],
+      "id": "d3f59104-2159-4644-af4b-41301abf6582",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1an0GTqEFSmWeKEakeSCRzQhKJXiEg-a-crH3I0ADPls",
+          "mode": "list",
+          "cachedResultName": "portfolio-leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1an0GTqEFSmWeKEakeSCRzQhKJXiEg-a-crH3I0ADPls/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1an0GTqEFSmWeKEakeSCRzQhKJXiEg-a-crH3I0ADPls/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "First Name": "={{ $('Webhook').item.json.body.firstName }}",
+            "Last Name ": "={{ $('Webhook').item.json.body.lastName }}",
+            "Email": "={{ $('Webhook').item.json.body.email }}",
+            "Company Name": "={{ $('Webhook').item.json.body.companyName }}",
+            "Business Type": "={{ $('Webhook').item.json.body.businessType }}",
+            "What do you want to automate?": "={{ $('Webhook').item.json.body.automationGoal }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "First Name",
+              "displayName": "First Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last Name ",
+              "displayName": "Last Name ",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company Name",
+              "displayName": "Company Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Business Type",
+              "displayName": "Business Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "What do you want to automate?",
+              "displayName": "What do you want to automate?",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -80,
+        0
+      ],
+      "id": "6ca77b18-e32d-4d5f-8f95-9e9800c487f5",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Append row in sheet').item.json.Email }}",
+        "subject": "=Discussion: {{ $('Append row in sheet').item.json['Company Name'] }} Automation",
+        "emailType": "text",
+        "message": "=Hi {{ $('Append row in sheet').item.json['First Name'] }},\n\n{{ $('AI Agent').item.json.output }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        464,
+        0
+      ],
+      "id": "d2dcae46-eb09-46d9-987f-44f84928cea0",
+      "name": "Send a message",
+      "webhookId": "REDACTED",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ba9d1bd2-b4cb-40a2-9224-187bf054b12f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "702a7baddd3fdb480012ee407d25716d9e235460dde148c830592c99ca1999a1"
+  },
+  "id": "ZGSr5kscbo263qth",
+  "tags": []
+}

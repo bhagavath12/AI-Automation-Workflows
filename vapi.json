@@ -1,0 +1,168 @@
+{
+  "name": "vapi",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "d0fbc561-8c16-4aba-91a9-b16d47b907f5",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8dd8c221-5012-41ef-a52a-c923f5bbf72d",
+      "name": "Webhook",
+      "webhookId": "REDACTED"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1NCpRRL3ZQsIYZv_y37g6wMzxLB6AodKaZqXxU_Dcq5Y",
+          "mode": "list",
+          "cachedResultName": "Vapi Sheets",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NCpRRL3ZQsIYZv_y37g6wMzxLB6AodKaZqXxU_Dcq5Y/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NCpRRL3ZQsIYZv_y37g6wMzxLB6AodKaZqXxU_Dcq5Y/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json.body.message.analysis.structuredData.ClientName }}",
+            "Email": "={{ $json.body.message.analysis.structuredData.EmailAddress }}",
+            "Consultation Type": "={{ $json.body.message.analysis.structuredData.AppointmentType }}",
+            "AppointmentDatetime": "={{ $json.body.message.analysis.structuredData.AppointmentDateTime }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "displayName": "Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Consultation Type",
+              "displayName": "Consultation Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "AppointmentDatetime",
+              "displayName": "AppointmentDatetime",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        208,
+        0
+      ],
+      "id": "f94c9f86-f2f1-423d-8544-e1cea807f7c2",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "Your Appoinment details With Aurora",
+        "emailType": "text",
+        "message": "=Hey {{ $json.Name }},\n\nYour appointment With Aurora Has been Set on {{ $json.AppointmentDatetime }}\n\nLooking forward to seeing you\n\nThanks",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        416,
+        0
+      ],
+      "id": "273eaccb-1f70-454a-b2d8-e822a7ab1bce",
+      "name": "Send a message",
+      "webhookId": "REDACTED",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "378f521f-f5d1-410d-bb86-ec51078c20e1",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "702a7baddd3fdb480012ee407d25716d9e235460dde148c830592c99ca1999a1"
+  },
+  "id": "YkFAJRhBZ4MUztgG",
+  "tags": []
+}

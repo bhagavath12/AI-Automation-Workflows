@@ -1,0 +1,867 @@
+{
+  "name": "analytics",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        192
+      ],
+      "id": "16d90e9f-5000-41dc-b224-61690905a61a",
+      "name": "When clicking \u2018Execute workflow\u2019"
+    },
+    {
+      "parameters": {
+        "jsCode": "// items from Google Sheets Read Rows\nreturn items.map(i => {\n  const r = i.json;\n  return {\n    json: {\n      id: r.id,\n      platform: (r.platform || '').toLowerCase(),\n      campaign: r.campaign || 'unknown',\n      date: r.date,\n      clicks: Number(r.clicks || 0),\n      spend: Number(r.spend || 0),\n      impressions: Number(r.impressions || 0)\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "5c786861-b8bf-458d-9772-6d5725a8d886",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(i => {\n  const r = i.json;\n  return {\n    json: {\n      id: r.id,\n      email: (r.email || '').toLowerCase(),\n      name: r.name,\n      utm_source: (r.utm_source || '').toLowerCase(),\n      utm_campaign: r.utm_campaign || 'unknown',\n      lead_status: r.lead_status || 'new',\n      created_at: r.created_at\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        192
+      ],
+      "id": "899491f0-2ce7-4df0-a1bc-69e93bb7cdf8",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Robust: handle two common Google Sheets outputs:\n// 1) multiple items (one per row) -> items = [ { json: { id, order_id, ... } }, ... ]\n// 2) single item whose json is an array -> items = [ { json: [ {...}, {...} ] } ]\n\nfunction normalizeRow(r) {\n  return {\n    id: r.id,\n    order_id: r.order_id,\n    email: (r.email || '').toLowerCase(),\n    total: Number(r.total || 0),\n    created_at: r.created_at,\n    utm_source: (r.utm_source || '').toLowerCase() || null,\n    utm_campaign: r.utm_campaign || 'unknown'\n  };\n}\n\n// Case A: items is an array of row-items\nif (Array.isArray(items) && items.length > 0 && items[0] && typeof items[0].json === 'object' && !Array.isArray(items[0].json)) {\n  return items.map(i => ({ json: normalizeRow(i.json) }));\n}\n\n// Case B: single item whose .json is an array of rows (some Sheets nodes behave like this)\nif (items.length === 1 && Array.isArray(items[0].json)) {\n  const rows = items[0].json;\n  return rows.map(r => ({ json: normalizeRow(r) }));\n}\n\n// Fallback: if nothing matched, return empty\nreturn [];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        384
+      ],
+      "id": "d9c8aa47-9d46-4564-9f0d-07b429a2dcde",
+      "name": "Code in JavaScript2"
+    },
+    {
+      "parameters": {
+        "numberInputs": 3
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        640,
+        176
+      ],
+      "id": "5d0cda02-d259-4d23-b07b-a6cd5cd623e3",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Combine Sheets (split) - works with Merge mode = Append\n// Input: items = array containing all rows from Ads, Leads, Orders (mixed)\n// Output: single item with { ads: [...], leads: [...], orders: [...] }\n\n// helpers\nconst normEmail = e => (e === null || typeof e === 'undefined') ? null : String(e).trim().toLowerCase();\nconst toNum = x => { const n = Number(x); return Number.isFinite(n) ? n : 0; };\n\n// Prepare arrays and maps for dedupe\nconst adsMap = new Map();    // key: platform|campaign|date\nconst leadsMap = new Map();  // key: email\nconst ordersMap = new Map(); // key: order_id\n\n// Iterate over every merged item (one per original row)\nfor (const it of items) {\n  const r = it.json || {};\n\n  // Detect ad row: existence of platform or clicks/spend/impressions\n  const hasAdFields = Boolean(r.platform || r.clicks || r.spend || r.impressions || r.campaign || r.date);\n  // Detect order row: presence of order_id\n  const hasOrder = Boolean(r.order_id || r.orderId || r.order || r.order_id === 0);\n  // Detect lead row: presence of email and lead indicators\n  const hasLead = Boolean(r.email && (r.lead_status || r.name || r.utm_source || r.utm_campaign || !hasAdFields && !hasOrder));\n\n  // --- Ads ---\n  if (hasAdFields) {\n    const platform = String(r.platform || 'unknown');\n    const campaign = String(r.campaign || 'unknown');\n    const date = String(r.date || (r.created_at ? String(r.created_at).split('T')[0] : 'unknown'));\n    const key = `${platform}|${campaign}|${date}`;\n    if (!adsMap.has(key)) {\n      adsMap.set(key, {\n        platform,\n        campaign,\n        date,\n        clicks: toNum(r.clicks || r.click || 0),\n        spend: toNum(r.spend || 0),\n        impressions: toNum(r.impressions || 0)\n      });\n    } else {\n      const ex = adsMap.get(key);\n      ex.clicks += toNum(r.clicks || r.click || 0);\n      ex.spend += toNum(r.spend || 0);\n      ex.impressions += toNum(r.impressions || 0);\n      adsMap.set(key, ex);\n    }\n  }\n\n  // --- Orders ---\n  if (hasOrder) {\n    const oid = String(r.order_id || r.orderId || r.order || '');\n    if (oid) {\n      if (!ordersMap.has(oid)) {\n        ordersMap.set(oid, {\n          order_id: oid,\n          email: r.email ? normEmail(r.email) : null,\n          total: toNum(r.total || r.total_price || 0),\n          created_at: r.created_at || null,\n          utm_source: (r.utm_source || null),\n          utm_campaign: (r.utm_campaign || null)\n        });\n      } else {\n        const ex = ordersMap.get(oid);\n        ex.email = ex.email || (r.email ? normEmail(r.email) : ex.email);\n        ex.total = ex.total || toNum(r.total || r.total_price || 0);\n        ex.utm_source = ex.utm_source || (r.utm_source || null);\n        ordersMap.set(oid, ex);\n      }\n    }\n  }\n\n  // --- Leads ---\n  if (hasLead) {\n    const email = r.email ? normEmail(r.email) : null;\n    if (email) {\n      if (!leadsMap.has(email)) {\n        leadsMap.set(email, {\n          email,\n          name: r.name || null,\n          utm_source: r.utm_source || null,\n          utm_campaign: r.utm_campaign || null,\n          lead_status: r.lead_status || null,\n          created_at: r.created_at || null\n        });\n      } else {\n        const ex = leadsMap.get(email);\n        ex.name = ex.name || r.name || ex.name;\n        ex.utm_source = ex.utm_source || r.utm_source || ex.utm_source;\n        ex.utm_campaign = ex.utm_campaign || r.utm_campaign || ex.utm_campaign;\n        ex.lead_status = ex.lead_status || r.lead_status || ex.lead_status;\n        leadsMap.set(email, ex);\n      }\n    }\n  }\n}\n\n// Convert maps to arrays\nconst adsArr = Array.from(adsMap.values());\nconst leadsArr = Array.from(leadsMap.values());\nconst ordersArr = Array.from(ordersMap.values());\n\n// Return single combined item\nreturn [\n  {\n    json: {\n      ads: adsArr,\n      leads: leadsArr,\n      orders: ordersArr\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        864,
+        192
+      ],
+      "id": "b33a3128-8075-429d-b784-d99075483dc5",
+      "name": "Code in JavaScript3"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1kXh17IFCGF8qjk7To9HlRqw4AuYP7tq_DivYQCIUE5Q",
+          "mode": "list",
+          "cachedResultName": "mock ads data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1kXh17IFCGF8qjk7To9HlRqw4AuYP7tq_DivYQCIUE5Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1kXh17IFCGF8qjk7To9HlRqw4AuYP7tq_DivYQCIUE5Q/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        192,
+        0
+      ],
+      "id": "b7a92eeb-a648-4ad8-bb1e-948184e9db1c",
+      "name": "ads",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1pU3H4Cw-I21uBfUlJgG7YZkq1Ax0Ac93AZTEuMPs3ws",
+          "mode": "list",
+          "cachedResultName": "mock leads data ",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pU3H4Cw-I21uBfUlJgG7YZkq1Ax0Ac93AZTEuMPs3ws/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1pU3H4Cw-I21uBfUlJgG7YZkq1Ax0Ac93AZTEuMPs3ws/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        192,
+        192
+      ],
+      "id": "7d80e4eb-6419-4349-818e-df4b98f10b59",
+      "name": "leads",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1gUGaTeggBmuLaIxB_sWlsOa7Je4EQBL2RwopRWp2Wxc",
+          "mode": "list",
+          "cachedResultName": "mock order data",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gUGaTeggBmuLaIxB_sWlsOa7Je4EQBL2RwopRWp2Wxc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1gUGaTeggBmuLaIxB_sWlsOa7Je4EQBL2RwopRWp2Wxc/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        192,
+        384
+      ],
+      "id": "f760a109-5c73-4106-b365-8ae4bf0594b6",
+      "name": "order",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Attribution & Aggregation - complete\n// Expects items[0].json = { ads: [...], leads: [...], orders: [...] }\n\n// Helpers\nconst norm = s => (s === null || typeof s === 'undefined') ? null : String(s).trim().toLowerCase();\nconst toNum = x => { const n = Number(x); return Number.isFinite(n) ? n : 0; };\nconst datePart = ts => (ts ? String(ts).split('T')[0] : 'unknown');\n\n// Input\nconst payload = items[0].json || {};\nconst adsArr = Array.isArray(payload.ads) ? payload.ads : [];\nconst leadsArr = Array.isArray(payload.leads) ? payload.leads : [];\nconst ordersArr = Array.isArray(payload.orders) ? payload.orders : [];\n\n// Build lead lookup by email\nconst leadsByEmail = new Map();\nleadsArr.forEach(l => {\n  if (l.email) leadsByEmail.set(norm(l.email), {\n    email: norm(l.email),\n    utm_source: norm(l.utm_source) || null,\n    utm_campaign: l.utm_campaign || null,\n    created_at: l.created_at || null\n  });\n});\n\n// Build ad buckets (platform|campaign|date)\nconst adBuckets = [];\nadsArr.forEach(a => {\n  adBuckets.push({\n    platform: norm(a.platform) || 'unknown',\n    campaign: a.campaign || 'unknown',\n    date: a.date || (a.created_at ? datePart(a.created_at) : 'unknown'),\n    clicks: toNum(a.clicks || 0),\n    spend: toNum(a.spend || 0),\n    impressions: toNum(a.impressions || 0)\n  });\n});\n\n// Utility to find nearest ad bucket by date (within windowDays)\nfunction findNearestAdBucket(orderDateStr, windowDays = 7) {\n  if (!orderDateStr) return null;\n  try {\n    const orderDate = new Date(orderDateStr.split('T')[0]);\n    let best = null;\n    let bestDiff = Infinity;\n    for (const b of adBuckets) {\n      if (!b.date || b.date === 'unknown') continue;\n      const adDate = new Date(b.date);\n      const diffDays = Math.abs((orderDate - adDate) / (1000*60*60*24));\n      if (diffDays <= windowDays && diffDays < bestDiff) {\n        bestDiff = diffDays;\n        best = b;\n      }\n    }\n    return best;\n  } catch (e) {\n    return null;\n  }\n}\n\n// Attribution: per order\nconst attributionLog = [];\nconst attributedOrders = ordersArr.map(o => {\n  const order = {\n    order_id: String(o.order_id || o.id || 'unknown'),\n    email: o.email ? norm(o.email) : null,\n    total: toNum(o.total || o.total_price || 0),\n    created_at: o.created_at || null,\n    utm_source: norm(o.utm_source) || null,\n    utm_campaign: o.utm_campaign || null\n  };\n\n  let derived_source = null;\n  let method = null;\n  let confidence = 0.0;\n\n  // 1) Email match to leads\n  if (order.email && leadsByEmail.has(order.email)) {\n    const lead = leadsByEmail.get(order.email);\n    derived_source = lead.utm_source || order.utm_source || null;\n    method = 'email_match';\n    confidence = 0.95;\n  }\n  // 2) order.utm_source present\n  else if (order.utm_source) {\n    derived_source = order.utm_source;\n    method = 'order_utm';\n    confidence = 0.8;\n  }\n  // 3) fallback: nearest ad bucket by date proximity\n  else if (order.created_at) {\n    const near = findNearestAdBucket(order.created_at, 7); // 7-day window\n    if (near) {\n      derived_source = near.platform || null;\n      method = 'date_proximity_ad';\n      confidence = 0.4;\n    } else {\n      method = 'unattributed';\n      confidence = 0.0;\n    }\n  } else {\n    method = 'unattributed';\n    confidence = 0.0;\n  }\n\n  attributionLog.push({\n    order_id: order.order_id,\n    email: order.email,\n    created_at: order.created_at,\n    derived_source,\n    method,\n    confidence,\n    utm_campaign: order.utm_campaign || null,\n    total: order.total\n  });\n\n  return {\n    order_id: order.order_id,\n    email: order.email,\n    total: order.total,\n    created_at: order.created_at,\n    utm_campaign: order.utm_campaign,\n    derived_source,\n    method,\n    confidence\n  };\n});\n\n// Build metrics buckets keyed by channel|campaign|date\nconst metricsMap = new Map();\n\n// Seed metrics from adBuckets\nadBuckets.forEach(a => {\n  const key = `${a.platform}|${a.campaign}|${a.date}`;\n  metricsMap.set(key, {\n    channel: a.platform,\n    campaign: a.campaign,\n    date: a.date,\n    clicks: a.clicks,\n    spend: a.spend,\n    impressions: a.impressions,\n    orders: 0,\n    revenue: 0\n  });\n});\n\n// Add attributed orders into buckets\nattributedOrders.forEach(o => {\n  const channel = o.derived_source || 'unattributed';\n  const campaign = o.utm_campaign || 'unknown';\n  const date = o.created_at ? String(o.created_at).split('T')[0] : 'unknown';\n  const key = `${channel}|${campaign}|${date}`;\n  if (!metricsMap.has(key)) {\n    metricsMap.set(key, {\n      channel,\n      campaign,\n      date,\n      clicks: 0,\n      spend: 0,\n      impressions: 0,\n      orders: 0,\n      revenue: 0\n    });\n  }\n  const m = metricsMap.get(key);\n  m.orders += 1;\n  m.revenue += toNum(o.total || 0);\n  metricsMap.set(key, m);\n});\n\n// Compute metric fields and prepare metric items\nconst metrics = [];\nfor (const [k, m] of metricsMap.entries()) {\n  const CPC = m.clicks ? (m.spend / m.clicks) : null;\n  const CPA = m.orders ? (m.spend / m.orders) : null;\n  const ROAS = m.spend ? (m.revenue / m.spend) : null;\n  const conversion_rate = m.clicks ? (m.orders / m.clicks) : null;\n\n  metrics.push({\n    json: {\n      date: m.date,\n      channel: m.channel,\n      campaign: m.campaign,\n      clicks: m.clicks,\n      spend: Number(m.spend.toFixed(2)),\n      impressions: m.impressions,\n      orders: m.orders,\n      revenue: Number(m.revenue.toFixed(2)),\n      CPC: CPC !== null ? Number(CPC.toFixed(2)) : null,\n      CPA: CPA !== null ? Number(CPA.toFixed(2)) : null,\n      ROAS: ROAS !== null ? Number(ROAS.toFixed(2)) : null,\n      conversion_rate: conversion_rate !== null ? Number((conversion_rate * 100).toFixed(2)) : null\n    }\n  });\n}\n\n// Final log item\nconst logItem = { json: { attribution_log: attributionLog } };\n\n// Return metrics items then the single log item\nreturn [...metrics, logItem];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1088,
+        192
+      ],
+      "id": "940bdf60-b412-4c20-ba46-b59a81323540",
+      "name": "Code in JavaScript4"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Keep all items except the last one (metrics only)\nreturn items.slice(0, -1);\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1312,
+        96
+      ],
+      "id": "7e5a76b4-8ba9-490c-83e5-15911c7e9516",
+      "name": "Code in JavaScript5"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1mbFAn9o9xCroyWug73p1kAYETdw1Kk3tQ3t42i5jtvA",
+          "mode": "list",
+          "cachedResultName": "MVP Analytics",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mbFAn9o9xCroyWug73p1kAYETdw1Kk3tQ3t42i5jtvA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1810856167,
+          "mode": "list",
+          "cachedResultName": "metrics",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mbFAn9o9xCroyWug73p1kAYETdw1Kk3tQ3t42i5jtvA/edit#gid=1810856167"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "date": "={{ $json.date }}",
+            "channel": "={{ $json.channel }}",
+            "campaign": "={{ $json.campaign }}",
+            "clicks": "={{ $json.clicks }}",
+            "spends": "={{ $json.spend }}",
+            "impression": "={{ $json.impressions }}",
+            "orders": "={{ $json.orders }}",
+            "revenue": "={{ $json.revenue }}",
+            "cpc": "={{ $json.CPC }}",
+            "cpa": "={{ $json.CPA }}",
+            "Roas": "={{ $json.ROAS }}",
+            "conversion rate": "={{ $json.conversion_rate }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "channel",
+              "displayName": "channel",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "campaign",
+              "displayName": "campaign",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "clicks",
+              "displayName": "clicks",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "spends",
+              "displayName": "spends",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "impression",
+              "displayName": "impression",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "orders",
+              "displayName": "orders",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "revenue",
+              "displayName": "revenue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cpc",
+              "displayName": "cpc",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "cpa",
+              "displayName": "cpa",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Roas",
+              "displayName": "Roas",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "conversion rate",
+              "displayName": "conversion rate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1536,
+        96
+      ],
+      "id": "1b93d06b-b05e-4c77-a27f-297daacce3fb",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Return only the last item (the attribution_log wrapper)\nif (items.length === 0) return [];\nreturn [ items[items.length - 1] ];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1312,
+        288
+      ],
+      "id": "5531a998-40fb-4abf-8cbf-16285620d82d",
+      "name": "Code in JavaScript6"
+    },
+    {
+      "parameters": {
+        "jsCode": "// expects single item with json.attribution_log = [...]\nconst arr = (items[0] && items[0].json && items[0].json.attribution_log) ? items[0].json.attribution_log : [];\nreturn arr.map(r => ({ json: r }));\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1536,
+        288
+      ],
+      "id": "4f0e48fe-32ca-4db8-9129-f92b32ca8bef",
+      "name": "Code in JavaScript7"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1mbFAn9o9xCroyWug73p1kAYETdw1Kk3tQ3t42i5jtvA",
+          "mode": "list",
+          "cachedResultName": "MVP Analytics",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mbFAn9o9xCroyWug73p1kAYETdw1Kk3tQ3t42i5jtvA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 582621607,
+          "mode": "list",
+          "cachedResultName": "Attribution Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mbFAn9o9xCroyWug73p1kAYETdw1Kk3tQ3t42i5jtvA/edit#gid=582621607"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "order_id": "={{ $json.order_id }}",
+            "email": "={{ $json.email }}",
+            "created_at": "={{ $json.created_at }}",
+            "derived_source": "={{ $json.derived_source }}",
+            "method": "={{ $json.method }}",
+            "confidence": "={{ $json.confidence }}",
+            "utm_campaign": "={{ $json.utm_campaign }}",
+            "total": "={{ $json.total }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "order_id",
+              "displayName": "order_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "derived_source",
+              "displayName": "derived_source",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "method",
+              "displayName": "method",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "confidence",
+              "displayName": "confidence",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "utm_campaign",
+              "displayName": "utm_campaign",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "total",
+              "displayName": "total",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1760,
+        288
+      ],
+      "id": "5e04bd04-5536-4fc0-8457-646c662c5e99",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "path": "b49efe3e-27d7-49af-b696-86b470bc2587",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -32,
+        608
+      ],
+      "id": "94aca7e1-e036-4bc8-8d3e-026881299842",
+      "name": "Webhook",
+      "webhookId": "REDACTED"
+    },
+    {
+      "parameters": {
+        "jsCode": "// --- Start: Helper Functions ---\nfunction normStr(x){\n  if (x === null || typeof x === 'undefined') return null;\n  return String(x).trim();\n}\nfunction normLower(x){\n  const s = normStr(x);\n  return s ? s.toLowerCase() : null;\n}\n// Upgraded: Strips currency/symbols. Returns 0 instead of null.\nfunction toNum(x){\n  if (x === null || typeof x === 'undefined' || x === '') return 0;\n  // Strips all non-numeric characters except for decimal and hyphen\n  const cleanString = String(x).replace(/[^0-9.-]+/g,\"\");\n  if (cleanString === '') return 0;\n  \n  const n = Number(cleanString);\n  return Number.isFinite(n) ? n : 0;\n}\nfunction getField(row, candidates){\n  for (const c of candidates){\n    if (c in row && row[c] !== undefined) return row[c];\n  }\n  const keys = Object.keys(row || {});\n  for (const c of candidates){\n    const lc = String(c).toLowerCase();\n    for (const k of keys){\n      if (String(k).toLowerCase() === lc) return row[k];\n    }\n  }\n  const normalizedMap = {};\n  for (const k of keys){\n    const kk = String(k).replace(/\\s+/g,'').toLowerCase();\n    normalizedMap[kk] = row[k];\n  }\n  for (const c of candidates){\n    const kk = String(c).replace(/\\s+/g,'').toLowerCase();\n    if (kk in normalizedMap) return normalizedMap[kk];\n  }\n  return undefined;\n}\n// --- End: Helper Functions ---\n\nconst processed_rows = [];\nlet total_spend = 0;\nlet total_revenue = 0;\nlet total_clicks = 0;\nlet total_orders = 0;\nlet total_impressions = 0;\n\n// 1. FIRST PASS: Loop, normalize, and get totals\nfor (const it of items) {\n  const r = it.json || {};\n\n  // Pull and normalize values\n  const date = getField(r, ['date','Date','created_at','createdAt']) ? (normStr(getField(r, ['date','Date','created_at','createdAt'])).split('T')[0]) : null;\n  const channel = getField(r, ['channel','Channel','utm_source','source']) ? normLower(getField(r, ['channel','Channel','utm_source','source'])) : 'unattributed';\n  const campaign = getField(r, ['campaign','Campaign','utm_campaign']) ? normStr(getField(r, ['campaign','Campaign','utm_campaign'])) : 'unknown';\n  const clicks = toNum(getField(r, ['clicks','click','Clicks']));\n  const spend = toNum(getField(r, ['spend','spends','Spend','spen','spen ds','spen\\n      ds']));\n  const impressions = toNum(getField(r, ['impressions','impression','Impressions']));\n  const orders = toNum(getField(r, ['orders','order_count','orders_count','Order']));\n  const revenue = toNum(getField(r, ['revenue','Revenue','total','total_revenue','total_price']));\n\n  // Calculate row-level metrics (handle division by zero)\n  const cpc = clicks > 0 ? Number((spend / clicks).toFixed(2)) : 0;\n  const cpa = orders > 0 ? Number((spend / orders).toFixed(2)) : 0;\n  const roas = spend > 0 ? Number((revenue / spend).toFixed(2)) : 0;\n  const conversion_rate = clicks > 0 ? Number(((orders / clicks) * 100).toFixed(2)) : 0;\n\n  // Add to totals\n  total_spend += spend;\n  total_revenue += revenue;\n  total_clicks += clicks;\n  total_orders += orders;\n  total_impressions += impressions;\n\n  // Store the processed row\n  processed_rows.push({\n    date,\n    channel,\n    campaign,\n    clicks,\n    spend,\n    impressions,\n    orders,\n    revenue,\n    cpc,\n    cpa,\n    roas,\n    conversion_rate\n  });\n}\n\n// 2. Calculate final aggregate metrics\nconst agg_average_cpa = total_orders > 0 ? Number((total_spend / total_orders).toFixed(2)) : 0;\nconst agg_average_roas = total_spend > 0 ? Number((total_revenue / total_spend).toFixed(2)) : 0;\nconst agg_avg_conversion_rate = total_clicks > 0 ? Number(((total_orders / total_clicks) * 100).toFixed(2)) : 0;\nconst agg_average_cpc = total_clicks > 0 ? Number((total_spend / total_clicks).toFixed(2)) : 0;\n\n\n// 3. SECOND PASS: Rebuild the output array\n// This flattens ALL data into every row\nconst final_output = processed_rows.map(row => {\n  return {\n    json: {\n      ...row, // Spread all the row data (date, channel, spend, cpa, roas, etc.)\n      \n      // --- Add ALL aggregate values with multiple key names to ensure a match ---\n      \n      // For \"Total Spend\"\n      \"Total Spend\": total_spend, // Matches label\n      \"total_spend\": total_spend, // snake_case\n      \"totalSpend\": total_spend, // camelCase\n\n      // For \"Average ROAS\"\n      \"Average ROAS\": agg_average_roas, // Matches label\n      \"average_roas\": agg_average_roas, // snake_case\n      \"averageRoas\": agg_average_roas, // camelCase\n      \"roas_avg\": agg_average_roas,\n\n      // For \"Average CPA\" (This one is WORKING)\n      \"Average CPA\": agg_average_cpa, // Matches label\n      \"average_cpa\": agg_average_cpa, // snake_case\n      \"averageCpa\": agg_average_cpa, // camelCase\n\n      // For \"Avg Conversion Rate\"\n      \"Avg Conversion Rate\": agg_avg_conversion_rate, // Matches label\n      \"avg_conversion_rate\": agg_avg_conversion_rate, // snake_case\n      \"avgConversionRate\": agg_avg_conversion_rate, // camelCase\n      \"average_conversion_rate\": agg_avg_conversion_rate,\n      \"averageConversionRate\": agg_avg_conversion_rate,\n      \n      // Add the other totals just in case\n      \"total_revenue\": total_revenue,\n      \"totalRevenue\": total_revenue,\n      \"total_orders\": total_orders,\n      \"totalOrders\": total_orders,\n      \"total_clicks\": total_clicks,\n      \"totalClicks\": total_clicks\n    }\n  };\n});\n\nreturn final_output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        608
+      ],
+      "id": "ec619b82-ba89-4b50-b999-3dd23b344434",
+      "name": "Code in JavaScript8"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        640,
+        608
+      ],
+      "id": "a59dd6b2-0b49-439b-ab41-10e4d8dc3723",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1mbFAn9o9xCroyWug73p1kAYETdw1Kk3tQ3t42i5jtvA",
+          "mode": "list",
+          "cachedResultName": "MVP Analytics",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mbFAn9o9xCroyWug73p1kAYETdw1Kk3tQ3t42i5jtvA/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1810856167,
+          "mode": "list",
+          "cachedResultName": "metrics",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1mbFAn9o9xCroyWug73p1kAYETdw1Kk3tQ3t42i5jtvA/edit#gid=1810856167"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        192,
+        608
+      ],
+      "id": "b65b1404-1613-4c66-9084-667b8e16a61d",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "typeVersion": 1,
+      "position": [
+        -272,
+        -16
+      ],
+      "id": "7456076b-40b9-43f5-950e-7fa2b0e5f220",
+      "name": "Facebook Graph API"
+    },
+    {
+      "parameters": {
+        "additionalOptions": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.googleAds",
+      "typeVersion": 1,
+      "position": [
+        -512,
+        -16
+      ],
+      "id": "2ea45946-08cd-4010-af0a-8b4fbea4f55e",
+      "name": "Get many campaigns"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.hubspot",
+      "typeVersion": 2.2,
+      "position": [
+        -272,
+        208
+      ],
+      "id": "08873573-f41e-421f-ad74-e6a2f4a90565",
+      "name": "Get many contacts"
+    },
+    {
+      "parameters": {
+        "topic": "orders/cancelled"
+      },
+      "type": "n8n-nodes-base.shopifyTrigger",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        432
+      ],
+      "id": "4d4d457f-5cb9-4810-b9d7-c52b002bd451",
+      "name": "Shopify Trigger",
+      "webhookId": "REDACTED"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking \u2018Execute workflow\u2019": {
+      "main": [
+        [
+          {
+            "node": "leads",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "order",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "ads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ads": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "leads": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "order": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript4": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript6",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code in JavaScript5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript5": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        []
+      ]
+    },
+    "Code in JavaScript6": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript7": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript8": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript8",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Facebook Graph API": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "fa225d87-6652-471a-85f3-2f3ef6ea724f",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "702a7baddd3fdb480012ee407d25716d9e235460dde148c830592c99ca1999a1"
+  },
+  "id": "tGdOn9W3J0a9HW3f",
+  "tags": []
+}

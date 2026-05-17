@@ -1,0 +1,405 @@
+{
+  "name": "Linkedin reserch agent",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        0
+      ],
+      "id": "7015f404-9eab-4eb1-9b86-43d4282a8493",
+      "name": "When clicking \u2018Execute workflow\u2019"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Today's date is: {{$today}}\n\n\nOnly log findings published within the last 7 days from this date.\nIf you cannot verify the publication date, discard it and search again.\n\nDo the following steps in order:\n\nSTEP 1 \u2014 Check existing logged ideas:\nUse the Google Sheets tool to read all rows from the \nResearch Ideas tab. Note all findings already logged \nto avoid duplicates.\n\nSTEP 2 \u2014 Search for new content:\nUse the Tavily tool to search for ONE high quality \nrecent finding. Search across these topics and pick \nwhichever has the most interesting and fresh result:\n- n8n new features or updates\n- MCP protocol news or new MCP server releases\n- LLM releases or updates (ChatGPT, Claude, Gemini)\n- AI automation tools for non-developers\n- Real business case studies of AI improving operations\n- Research on ROI and business impact of AI automation\n- AI agents being used in real workflows\n\nSTEP 3 \u2014 Deduplicate:\nCompare your finding against what you read in Step 1. \nIf it is too similar to something already logged, \nsearch again for something different.\n\nIf the source does not meet the SOURCE QUALITY tiers \ndefined in your instructions, discard it and search again.\n\nBefore accepting any finding, ask yourself:\n- Is this source a named institution, official product blog, \n  or known publication?\n- Does it cite real companies, real numbers, or real research?\n- Would an AI professional trust this source?\n\nIf the answer to any of these is NO, discard and search again.\n\nAlso verify the finding is still current and accurate \nas of today's date. Specifically:\n- If the finding mentions AI models, verify those models \n  are not already retired or superseded\n- If the finding describes a feature rollout, verify \n  it is not already old news\n- If the finding appears to be outdated relative to \n  today, discard it and search again\n\nSTEP 4 \u2014 Return exactly ONE finding as JSON.\nContent type must be one of: \nTool Update, Research Paper, News & Trends",
+        "options": {
+          "systemMessage": "=You are a research analyst specializing in AI automation, \nAI agents, and workflow automation tools.\n\nYOUR EXPERTISE AREAS:\n- n8n workflows and new node/feature updates\n- AI agent developments and news\n- Large Language Model releases and updates\n- MCP (Model Context Protocol) developments\n- No-code/low-code AI automation tools\n- AI research papers relevant to automation\n- Real world business impact of AI and automation\n- Case studies of companies using AI to improve operations\n\nCONTENT TYPES TO FIND:\n- Tool Updates (n8n updates, new AI tools, MCP servers)\n- Research Papers (AI agents, LLMs, business automation impact)\n- News & Trends (AI automation industry news, business case \n  studies, real world AI adoption stories, ROI of automation)\n\nWHAT TO AVOID:\n- Consumer products or B2C news\n- Generic business news\n- Political or social news\n- Anything already logged in the Google Sheet\n- Blog posts from unknown or small companies promoting their own content\n- Generic listicles or \"top 10\" style articles\n- Promotional content disguised as research\n- Sources without clear authorship or publication date\n- Changelog or release notes pages that contain \n  multiple historical entries \u2014 these cause outdated \n  findings to appear current\n- Prefer individual article URLs over rolling \n  changelog pages\n\nSOURCE QUALITY \u2014 STRICT PRIORITY ORDER:\n1. Academic research papers (arxiv.org, Google Scholar, IEEE)\n2. Reports from known research institutions \n   (McKinsey, Gartner, Forrester, MIT, Stanford)\n3. Official product blogs \n   (n8n.io, Anthropic, OpenAI, Google DeepMind)\n4. High authority tech publications \n   (MIT Technology Review, Wired, TechCrunch, VentureBeat)\n5. Verified business case studies with real metrics and company names\n\nIf you cannot find something from tier 1-3, only then go to tier 4-5.\nNever log anything below tier 5.\n\nYOUR OUTPUT MUST BE A SINGLE finding in this exact JSON format \nand nothing else:\n{\n  \"content_type\": \"\",\n  \"finding\": \"\",\n  \"source_url\": \"\",\n  \"relevance\": \"\"\n}\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        272,
+        0
+      ],
+      "id": "5757b847-2d93-40fd-ae1e-fefaf645571b",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        272,
+        224
+      ],
+      "id": "76d8fd1d-4515-4857-aefc-008c9456458c",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Use this tool to search the web for recent news, updates, \nand research in AI automation, n8n, AI agents, LLMs, \nand MCP developments. Always search for content from \nthe last 7 days.",
+        "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "@tavily/n8n-nodes-tavily.tavilyTool",
+      "typeVersion": 1,
+      "position": [
+        416,
+        224
+      ],
+      "id": "d8390728-09cf-49af-9242-210ec7c6d9f7",
+      "name": "Tavily",
+      "credentials": {
+        "tavilyApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst results = [];\n\nitems.forEach(item => {\n  try {\n    const output = item.json.output;\n    \n    // Clean markdown code blocks\n    let cleaned = output.replace(/```json\\n?/g, '').replace(/```\\n?/g, '').trim();\n    \n    const parsed = JSON.parse(cleaned);\n    \n    // Generate timestamp-based ID\n    const now = new Date();\n    const pad = (n) => String(n).padStart(2, '0');\n    const id = `IDEA-${now.getFullYear()}${pad(now.getMonth()+1)}${pad(now.getDate())}-${pad(now.getHours())}${pad(now.getMinutes())}`;\n    \n    results.push({\n      json: {\n        ID: id,\n        \"Date Added\": `${pad(now.getDate())}/${pad(now.getMonth()+1)}/${now.getFullYear()}`,\n        \"Content Type\": parsed.content_type || '',\n        \"Finding\": parsed.finding || '',\n        \"Source URL\": parsed.source_url || '',\n        \"Relevance\": parsed.relevance || '',\n        \"Status\": \"New\"\n      }\n    });\n\n  } catch (error) {\n    results.push({\n      json: {\n        error: error.message,\n        raw: item.json.output\n      }\n    });\n  }\n});\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        624,
+        0
+      ],
+      "id": "8f2dc9d0-cadf-4ba7-9958-805fc5a850d2",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1EOZr5hTAcE_85yMS7enICjyDgkeEQ6FPrdt6jWc7fqU",
+          "mode": "list",
+          "cachedResultName": "linkedin content ideas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EOZr5hTAcE_85yMS7enICjyDgkeEQ6FPrdt6jWc7fqU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Research Ideas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EOZr5hTAcE_85yMS7enICjyDgkeEQ6FPrdt6jWc7fqU/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $json.ID }}",
+            "Date Added": "={{ $json['Date Added'] }}",
+            "Content Type": "={{ $json['Content Type'] }}",
+            "Finding": "={{ $json.Finding }}",
+            "Source URL": "={{ $json['Source URL'] }}",
+            "Relevance": "={{ $json.Relevance }}",
+            "Status": "=NEW"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date Added",
+              "displayName": "Date Added",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Content Type",
+              "displayName": "Content Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Finding",
+              "displayName": "Finding",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Source URL",
+              "displayName": "Source URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Relevance",
+              "displayName": "Relevance",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Approved On",
+              "displayName": "Approved On",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1008,
+        0
+      ],
+      "id": "868a56d6-8ab9-4ec4-9fc7-582e2f465e72",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1,
+                3,
+                5
+              ],
+              "triggerAtHour": 12
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -48,
+        -240
+      ],
+      "id": "0191da3e-4313-42d3-9d65-e8961c4b8229",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Use this tool to read existing findings from the \nResearch Ideas tab in Google Sheets. Use this BEFORE \nsearching Tavily to avoid logging duplicate topics.",
+        "documentId": {
+          "__rl": true,
+          "value": "1EOZr5hTAcE_85yMS7enICjyDgkeEQ6FPrdt6jWc7fqU",
+          "mode": "list",
+          "cachedResultName": "linkedin content ideas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EOZr5hTAcE_85yMS7enICjyDgkeEQ6FPrdt6jWc7fqU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Research Ideas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EOZr5hTAcE_85yMS7enICjyDgkeEQ6FPrdt6jWc7fqU/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        544,
+        240
+      ],
+      "id": "93889e41-31f4-4f22-ae7a-aa32b818c194",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "1537316253",
+        "text": "=content type:{{ $json['Content Type'] }}\n\nfinding:{{ $json.Finding }}\n\nsource url:{{ $json['Source URL'] }}\n\nPlease check the sheet: \n<a href=\"https://docs.google.com/spreadsheets/d/1EOZr5hTAcE_85yMS7enICjyDgkeEQ6FPrdt6jWc7fqU/edit?gid=0#gid=0\">View Sheet</a>",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1328,
+        0
+      ],
+      "id": "2be82337-62dd-4f0e-a5fc-bd0b007aed4d",
+      "name": "Send a text message",
+      "webhookId": "REDACTED",
+      "credentials": {
+        "telegramApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking \u2018Execute workflow\u2019": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tavily": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "dbd0cfd5-0195-4bda-9df0-3fbb4003b77c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "287a4a5dd28f5c98ddc589241c318b3e7269f1150ce5ac1bb73c0a19ae94ad04"
+  },
+  "id": "fv4FRLJPheI4S2kZ",
+  "tags": []
+}

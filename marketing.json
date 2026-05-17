@@ -1,0 +1,280 @@
+{
+  "name": "marketing",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Product Name: {{ $('Code in JavaScript').item.json.parsed.product_name }}\nProduct Category: {{ $('Code in JavaScript').item.json.parsed.product_category }}\nTarget Audience: {{ $json.target_audience }}\nBrand Voice: {{ $json.brand_voice }}\nLanguage: {{ $json.language }}\n\nTechnical Constraints:\nAspect Ratio: {{ $('Code in JavaScript').item.json.parsed.aspect_ratio }}\nDuration (Seconds): {{ $('Code in JavaScript').item.json.parsed.desired_length_seconds }}\n\nINSTRUCTION: Based on the details above, write a single, vivid, narrative video generation prompt. The prompt must summarize the product visual, the action taking place, the lighting, and the mood in one continuous paragraph. Do not use line breaks.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an expert Video Prompt Engineer for the Key AI (Sora) API. Your goal is to convert user product data into a specific JSON API request body.\n\nRULES:\n1. OUTPUT FORMAT: Return ONLY valid JSON. No markdown, no code blocks, no intro text.\n2. MODEL: Always use \"sora-2-image-to-video\".\n3. PROMPT TEXT: The \"prompt\" field inside the JSON must be a SINGLE continuous paragraph string. Absolutely NO newlines (\\n) or line breaks are allowed within the prompt string.\n4. CONTENT: The prompt should be descriptive and visual (describing lighting, camera movement, and subject action) based on the user's brand voice and product type.\n5. IMAGE URL: Leave the image URL as a placeholder \"<REPLACE_WITH_IMAGE_URL>\" for the workflow to inject later.\n\nJSON SCHEMA TO FOLLOW:\n{\n  \"model\": \"sora-2-image-to-video\",\n  \"input\": {\n    \"prompt\": \"String (single paragraph description)\",\n    \"image_url\": \"<REPLACE_WITH_IMAGE_URL>\",\n    \"aspect_ratio\": \"String (e.g., 9:16)\",\n    \"n_frames\": Integer (equal to duration seconds),\n    \"n_frames_mode\": \"seconds\",\n    \"remove_watermark\": true\n  }\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        656,
+        -48
+      ],
+      "id": "6786c3c3-04b3-490b-b64a-14342a413926",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n  \"target_audience\": \"women aged 20\u201345 who care about skincare, glow, and anti-aging\",\n  \"brand_voice\": \"elegant, trustworthy, science-backed, warm\",\n  \"language\": \"en\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        448,
+        -48
+      ],
+      "id": "860b2c7f-a986-40ca-a517-49941c35f1c2",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        656,
+        176
+      ],
+      "id": "5d51471e-82ee-44f2-83be-43edc14aeb64",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        32,
+        -48
+      ],
+      "id": "b696ec5c-a91e-41d0-8bf2-0ccec2e4d509",
+      "name": "Telegram Trigger",
+      "webhookId": "REDACTED",
+      "credentials": {
+        "telegramApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// n8n Function node code\n// Input: items from Telegram node (each item has .json.message.caption and .json.message.photo[] possibly)\n// Output: items where each item.json.parsed contains the normalized schema\n//\n// Schema produced:\n// {\n//   product_name: string|null,\n//   product_category: string|null,\n//   aspect_ratio: string,                 // normalized like \"9:16\" or default \"9:16\"\n//   desired_length_seconds: number|null,  // integer seconds\n//   target_audience: string,              // default provided below\n//   brand_voice: string,                  // default provided below\n//   language: string,                     // default provided below\n//   image_file_id: string|null            // chosen best photo file_id if present\n// }\n\nconst DEFAULTS = {\n  target_audience: \"women aged 20\u201345 who care about skincare, glow, and anti-aging\",\n  brand_voice: \"elegant, trustworthy, science-backed, warm\",\n  language: \"en\",\n  aspect_ratio: \"9:16\"\n};\n\nfunction normalizeKey(k) {\n  if (!k) return \"\";\n  return k.toLowerCase().replace(/[^a-z0-9\\s]/g, \"\").trim();\n}\n\nfunction extractNumber(str) {\n  if (!str) return null;\n  const m = str.match(/(\\d+(\\.\\d+)?)/);\n  if (!m) return null;\n  return Math.round(parseFloat(m[1]));\n}\n\nfunction chooseBestPhoto(photoArray) {\n  if (!Array.isArray(photoArray) || photoArray.length === 0) return null;\n  // Prefer largest by file_size, fallback to largest width*height\n  let best = null;\n  for (const p of photoArray) {\n    if (!best) { best = p; continue; }\n    if (p.file_size && best.file_size) {\n      if (p.file_size > best.file_size) best = p;\n      continue;\n    }\n    // fallback compare area\n    const a = (p.width||0) * (p.height||0);\n    const b = (best.width||0) * (best.height||0);\n    if (a > b) best = p;\n  }\n  return best ? best.file_id : null;\n}\n\nreturn items.map(item => {\n  const msg = (item.json && (item.json.message || item.json)) || {};\n  const captionRaw = msg.caption || msg.text || \"\";\n  const lines = captionRaw.split(/\\r?\\n/).map(l => l.trim()).filter(l => l.length > 0);\n\n  // initialize parsed values\n  let product_name = null;\n  let product_category = null;\n  let aspect_ratio = null;\n  let desired_length_seconds = null;\n\n  // Try to parse key:value pairs first\n  for (const line of lines) {\n    // allow separators like \":\" or \"-\" or \"\u2014\"\n    const parts = line.split(/[:\\-\u2013\u2014]+/).map(p => p.trim());\n    if (parts.length >= 2) {\n      const rawKey = normalizeKey(parts[0]);\n      const rest = parts.slice(1).join(\":\").trim();\n\n      if (rawKey.includes(\"product\") || rawKey.includes(\"name\")) {\n        // e.g., \"Product name: Hex\"\n        product_name = rest || product_name;\n        continue;\n      }\n      if (rawKey.includes(\"category\") || rawKey.includes(\"cate\") || rawKey.includes(\"type\")) {\n        product_category = rest || product_category;\n        continue;\n      }\n      if (rawKey.includes(\"aspect\") || rawKey.includes(\"ratio\") || rawKey.includes(\"aspectration\") || rawKey.includes(\"aspectration\")) {\n        // normalize common mistakes like \"Aspect ration\"\n        const r = rest.replace(/\\s+/g, \"\");\n        if (/^\\d+:\\d+$/.test(r)) aspect_ratio = r;\n        else aspect_ratio = rest || aspect_ratio;\n        continue;\n      }\n      if (rawKey.includes(\"length\") || rawKey.includes(\"sec\") || rawKey.includes(\"seconds\") || rawKey.includes(\"duration\")) {\n        const n = extractNumber(rest);\n        if (n !== null) desired_length_seconds = n;\n        continue;\n      }\n      // fallback heuristics\n    } else {\n      // lines without colon: try to infer\n      const lower = line.toLowerCase();\n      // e.g., \"Length 10 sec\" or \"Aspect ration 9:16\" possibly no colon\n      if (lower.match(/\\b(length|duration)\\b/)) {\n        const n = extractNumber(line);\n        if (n !== null) desired_length_seconds = n;\n        continue;\n      }\n      if (lower.match(/\\b\\d+:\\d+\\b/)) {\n        const r = lower.match(/\\b\\d+:\\d+\\b/)[0];\n        aspect_ratio = r;\n        continue;\n      }\n    }\n\n    // Additional tolerant patterns: e.g., \"Cateory: Face Serum\" (misspelling)\n    const normalized = normalizeKey(line);\n    if (normalized.includes(\"cateory\") || normalized.includes(\"cate\") && line.toLowerCase().includes(\"serum\")) {\n      // Attempt to extract value after last space\n      const maybe = line.split(/[:\\-]+/).slice(1).join(\":\").trim();\n      if (maybe) product_category = maybe;\n    }\n  }\n\n  // Extra pass: if some fields still missing, attempt regex captures in whole caption\n  if (!product_name) {\n    const m = captionRaw.match(/product\\s*(?:name)?\\s*[:\\-\u2013\u2014]?\\s*([^\\n\\r]+)/i);\n    if (m) product_name = m[1].trim();\n  }\n  if (!product_category) {\n    const m2 = captionRaw.match(/category|cateog?ry|cateory\\s*[:\\-\u2013\u2014]?\\s*([^\\n\\r]+)/i);\n    if (m2) product_category = m2[1].trim();\n    else {\n      // try \"Face Serum\" style detection (common product category words)\n      const catMatch = captionRaw.match(/\\b(serum|cleanser|moisturizer|toner|lotion|cream|oil)\\b/i);\n      if (catMatch) product_category = (product_category || (catMatch[0].toLowerCase() === \"serum\" ? \"Face Serum\" : catMatch[0]));\n    }\n  }\n  if (!aspect_ratio) {\n    const m3 = captionRaw.match(/\\b(\\d{1,2}:\\d{1,2})\\b/);\n    if (m3) aspect_ratio = m3[1];\n  }\n  if (!desired_length_seconds) {\n    const m4 = captionRaw.match(/(\\d+)\\s*(?:sec|seconds|s)\\b/i);\n    if (m4) desired_length_seconds = parseInt(m4[1], 10);\n  }\n\n  // Final normalization / fallbacks\n  if (!aspect_ratio) aspect_ratio = DEFAULTS.aspect_ratio;\n  // ensure aspect_ratio formats like \"9:16\" not \"9x16\" etc.\n  aspect_ratio = aspect_ratio.toString().replace(/\\s*x\\s*/i, \":\").trim();\n\n  // If length is short and units possibly in \"10 sec\" -> keep as seconds; if minutes detected, convert (rare)\n  if (desired_length_seconds === null) {\n    // try minutes\n    const mMin = captionRaw.match(/(\\d+)\\s*(?:min|minutes)\\b/i);\n    if (mMin) desired_length_seconds = parseInt(mMin[1], 10) * 60;\n  }\n\n  // pick best image file_id if photos exist\n  const image_file_id = chooseBestPhoto((msg.photo || []));\n\n  // Build parsed schema\n  const parsed = {\n    product_name: product_name ? product_name : null,\n    product_category: product_category ? product_category : null,\n    aspect_ratio: aspect_ratio || DEFAULTS.aspect_ratio,\n    desired_length_seconds: desired_length_seconds !== null ? desired_length_seconds : null,\n    target_audience: DEFAULTS.target_audience,\n    brand_voice: DEFAULTS.brand_voice,\n    language: DEFAULTS.language,\n    image_file_id: image_file_id\n  };\n\n  // attach parsed object to the output item\n  item.json.parsed = parsed;\n\n  // also keep original caption for reference\n  item.json._original_caption = captionRaw;\n\n  return item;\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        -48
+      ],
+      "id": "857f6dbb-e3b8-4a17-b810-2b551a282d45",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $('Telegram Trigger').item.json.message.photo[2].file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1024,
+        -48
+      ],
+      "id": "4ade6fa5-2194-4317-8da3-01387f747018",
+      "name": "Get a file",
+      "webhookId": "REDACTED",
+      "credentials": {
+        "telegramApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/veo/generate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer REDACTED"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"prompt\": \"{{ $('AI Agent').item.json.output.input.prompt }}\",\n  \"imageUrls\": [\n    \"{{ $json.image_url }}\"\n  ],\n  \"model\": \"veo3\",\n  \"aspectRatio\": \"{{ $('AI Agent').item.json.output.input.aspect_ratio }}\",\n  \"n_frames\": {{ $('AI Agent').item.json.output.input.n_frames }},\n  \"n_frames_mode\": \"seconds\",\n  \"remove_watermark\": true\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1440,
+        -48
+      ],
+      "id": "f114d9bd-c5e0-4755-b404-c796f086bded",
+      "name": "Sora Video"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c31a38b5-f148-4ac9-8472-b513f3f5fae3",
+              "name": "image_url",
+              "value": "=https://api.telegram.org/file/botREDACTED/{{$json.result.file_path}}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1216,
+        -48
+      ],
+      "id": "318e06fa-d3e9-44e5-ae49-6da6194cf074",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"model\": \"sora-2-image-to-video\",\n  \"input\": {\n    \"prompt\": \"A cinematic close-up of the Hex Face Serum bottle rotating slowly against a warm, golden backlight. The lighting is soft and luxurious, highlighting the texture of the glass. A model with radiant skin gently applies the serum, smiling confidently to reflect the brand's trustworthy and elegant voice. The camera uses a slow zoom effect to emphasize the hydration benefits.\",\n    \"image_url\": \"<REPLACE_WITH_IMAGE_URL>\",\n    \"aspect_ratio\": \"9:16\",\n    \"n_frames\": 10,\n    \"n_frames_mode\": \"seconds\",\n    \"remove_watermark\": true\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        800,
+        176
+      ],
+      "id": "e18c8eb8-3a34-46ef-bdb1-47113aea6233",
+      "name": "Structured Output Parser"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Sora Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f48f5b0f-8f5d-43f1-bf52-692c2b3e35f7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "702a7baddd3fdb480012ee407d25716d9e235460dde148c830592c99ca1999a1"
+  },
+  "id": "ePwbrTUshQ3uBxjK",
+  "tags": []
+}

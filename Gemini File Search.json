@@ -1,0 +1,317 @@
+{
+  "name": "Gemini File Search",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        0
+      ],
+      "id": "b5244b2a-ccd1-46e0-9dc7-e0b4310b811c",
+      "name": "When clicking \u2018Execute workflow\u2019"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/fileSearchStores",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "displayName",
+              "value": "n8n-demo"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        176,
+        0
+      ],
+      "id": "e23ac220-9abc-4f3a-ad65-7fc3035da2c3",
+      "name": "create store",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "File search data Upload",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "upload the file",
+              "fieldType": "file",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.3,
+      "position": [
+        -80,
+        176
+      ],
+      "id": "a5e5c106-35d8-4de7-9963-66adededb39b",
+      "name": "On form submission",
+      "webhookId": "REDACTED"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/fileSearchStores/n8ndemo-9dtwmipmgekl:importFile",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "file_name",
+              "value": "={{ $json.file.name }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        464,
+        176
+      ],
+      "id": "7d467257-f203-486c-9c41-d615c56104e2",
+      "name": "HTTP Request1",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -96,
+        384
+      ],
+      "id": "da0c746f-8f10-4890-be8d-c5510c9dad4f",
+      "name": "When chat message received",
+      "webhookId": "REDACTED"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "=You are a dedicated HR Policy Assistant. Your primary source of truth is the official Company Employee Handbook.\n\nYOUR RESPONSIBILITIES:\n1. Always uses the \"Knowledge Base\" tool to find answers. Do not rely on outside knowledge.\n2. Ground your answers strictly in the context provided by the tool.\n3. If the answer is found, cite the specific section or topic (e.g., \"According to the 'Leave Policy' section...\").\n4. If the answer is NOT in the handbook, explicitly state: \"I cannot find information regarding that in the Employee Handbook.\"\n5. Keep your tone professional, clear, and helpful.\n\nCRITICAL TOOL INSTRUCTION:\nWhen generating the input for the \"Knowledge Base\" tool, you must sanitize the text to prevent errors.\n- REMOVE all punctuation (question marks, commas, quotes).\n- REMOVE all newlines.\n- Send ONLY the core search keywords or a simple sentence.\n- Example: If the user asks \"What is the policy on 'remote work'?\", send: \"what is the policy on remote work\""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        112,
+        384
+      ],
+      "id": "5bebea5a-fad0-45c4-b81f-39b35225ac4a",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        592
+      ],
+      "id": "b08ea78c-3aca-4edc-9258-271b75d19699",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "toolDescription": "Call this tool whenever the user asks a question about company policies, rules, benefits, code of conduct, or anything contained in the Employee Handbook. The input should be a sanitized search query.",
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"{{ $fromAI('query', 'the question the user needs an answer to') }}\"\n        }\n      ]\n    }\n  ],\n  \"tools\": [\n    {\n      \"file_search\": {\n        \"file_search_store_names\": [\n          \"fileSearchStores/n8ndemo-9dtwmipmgekl\"\n        ]\n      }\n    }\n  ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.2,
+      "position": [
+        368,
+        592
+      ],
+      "id": "05084570-32c9-4660-9061-1bd4dfce423a",
+      "name": "Knowledge Base",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://generativelanguage.googleapis.com/upload/v1beta/files",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendBody": true,
+        "contentType": "binaryData",
+        "inputDataFieldName": "upload_the_file",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        176,
+        176
+      ],
+      "id": "59e9b483-ede7-4dba-8369-2d0ed0b29126",
+      "name": "upload the file",
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking \u2018Execute workflow\u2019": {
+      "main": [
+        [
+          {
+            "node": "create store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "upload the file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create store": {
+      "main": [
+        []
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Knowledge Base": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "upload the file": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "be08f633-c3d6-4b87-aac6-eb99be41ba59",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "702a7baddd3fdb480012ee407d25716d9e235460dde148c830592c99ca1999a1"
+  },
+  "id": "ClefjtojfgATRS47",
+  "tags": []
+}

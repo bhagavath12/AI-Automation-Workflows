@@ -1,0 +1,257 @@
+{
+  "name": "whatsapp agent",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "messages"
+        ],
+        "options": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "168296b6-c12d-4e97-bd39-4229c52972ad",
+      "name": "WhatsApp Trigger",
+      "webhookId": "REDACTED",
+      "credentials": {
+        "whatsAppTriggerApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1vOU-__FwaXQuG-ASz1TwFO2iKSN9sQ0Eb7Yufa4CCyI",
+          "mode": "list",
+          "cachedResultName": "whatsapp test",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1vOU-__FwaXQuG-ASz1TwFO2iKSN9sQ0Eb7Yufa4CCyI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1vOU-__FwaXQuG-ASz1TwFO2iKSN9sQ0Eb7Yufa4CCyI/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Number",
+              "lookupValue": "={{ $json.messages[0].from }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        416,
+        0
+      ],
+      "id": "d9b1c0be-d188-41f4-9530-dc6b57883548",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Lead details:\n- Name: {{ $('Get row(s) in sheet').first().json.Name }}\n- Company Size: {{ $('Get row(s) in sheet').first().json['Company Size'] }}\n- What they want to automate: {{ $('Get row(s) in sheet').first().json['What they want to automate'] }}\n\n- WhatsApp Number: {{ $json.Number }}\n\nTheir latest message: {{ $('WhatsApp Trigger').item.json.messages[0].text.body }}\n\nCheck the conversation history carefully:\n- If NO history exists \u2192 send Message 1\n- If history exists and the final qualification message (Message 4) has NOT been sent yet \u2192 continue from where you left off and send the next message\n- If history shows Message 4 was already sent \u2192 this is a new round, ignore all previous history and start fresh from Message 1\n\n",
+        "options": {
+          "systemMessage": "You are Aria, a friendly automation consultant at ProfitPath.AI.\n\nCRITICAL RULES - READ FIRST:\n- You send ONE message per turn, then STOP and wait\n- Never send multiple messages in a single turn\n- Never assume the lead's answer - wait for their actual reply\n- Check conversation history before every response to know which question you are on\n- Never restart the conversation unless the lead explicitly asks\n\nRESET RULE:\nIf the conversation history shows that Message 4 (the final qualification message) has already been sent AND the lead sends a new message, treat it as a brand new conversation and start fresh from Message 1 regardless of history.\n\nYOUR ROLE:\nQualify leads through exactly 3 questions across 4 messages total.\n\nMESSAGE STRUCTURE:\nMessage 1: Greet by name, acknowledge what they want to automate, ask how they currently handle this process manually\nMessage 2: After they answer Q1 - acknowledge and ask their timeline to get it automated\nMessage 3: After they answer Q2 - acknowledge and ask how many people are affected\nMessage 4 (FINAL): After they answer Q3 - make your qualification decision and send ONE of these:\n\nIF QUALIFIED:\n\"Great news [Name]! \ud83c\udf89 You're a perfect fit for what we do at ProfitPath.AI. Here's your link to book a call with us \u2014 we can't wait to get started! \ud83d\ude80 https://calendly.com/pranadirbhagavathsenareddy/30min\"\n\nIF NOT QUALIFIED:\n\"Thank you so much for your time [Name] \ud83d\ude4f After reviewing your responses, we don't think we're the right fit at this stage. We wish you all the best and hope our paths cross again in the future! \ud83d\ude0a\"\n\nQUALIFICATION CRITERIA - QUALIFIED only if ALL three are true:\n- They have a clear manual process they want to automate\n- Timeline is within 3 months\n- At least 2 or more people are affected\n\nSTRICT RULES:\n- Send ONLY ONE message per turn\n- Always use the recipient number from the user prompt\n- Keep every message under 3 lines\n- Be warm and conversational, never robotic\n- Never go off topic or try to sell anything\n- After message 4 output only this JSON and stop:\n{\n  \"qualification_status\": \"Qualified\" or \"Disqualified\"\n}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        624,
+        0
+      ],
+      "id": "30327495-6378-4bbd-a179-a16882ccb307",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        496,
+        208
+      ],
+      "id": "dd8031e8-fbc4-4cf5-b0b0-265f792a7f45",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "630b3aa0-29ed-450c-926f-504e7b9076bf",
+              "leftValue": "={{ $json.messages[0].type }}",
+              "rightValue": "text",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        208,
+        0
+      ],
+      "id": "3e6003d9-f63c-4487-9867-23e512ac7fbd",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "send",
+        "phoneNumberId": "=1052550197934265",
+        "recipientPhoneNumber": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Recipient_s_Phone_Number', ``, 'string') }}",
+        "textBody": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Text_Body', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.whatsAppTool",
+      "typeVersion": 1.1,
+      "position": [
+        784,
+        208
+      ],
+      "id": "26a73708-6b97-4124-a6fb-baab87dc8cb9",
+      "name": "Send message in WhatsApp Business Cloud",
+      "webhookId": "REDACTED",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.Number }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        640,
+        208
+      ],
+      "id": "d1ccb8eb-cd9b-4883-873d-57c6e9ee4715",
+      "name": "Simple Memory"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "WhatsApp Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send message in WhatsApp Business Cloud": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "5113062d-f878-45b6-b7e2-142592085d7a",
+  "meta": {
+    "instanceId": "702a7baddd3fdb480012ee407d25716d9e235460dde148c830592c99ca1999a1"
+  },
+  "id": "j3XHIqbQjUnRDbv1",
+  "tags": []
+}

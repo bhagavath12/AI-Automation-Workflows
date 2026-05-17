@@ -1,0 +1,1413 @@
+{
+  "name": "linedin connections",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "start-ai-job",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -288,
+        32
+      ],
+      "id": "30b1a9b3-1a20-4f79-b1d5-decec274ac74",
+      "name": "Webhook",
+      "webhookId": "REDACTED"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "body.leads",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        32
+      ],
+      "id": "b34b836a-2066-4f54-9e13-b0a5157bab21",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.jobTitle.toLowerCase()}}\n",
+                    "rightValue": "=founder",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "8ca04aa2-08d6-4c28-a691-4353e6dd5c6c"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "f5c29319-b0d2-4eb2-aed0-53d71851eb86",
+                    "leftValue": "={{$json.jobTitle.toLowerCase()}}\n",
+                    "rightValue": "ceo",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "a5eaa34a-a8ff-424c-a850-6cd5d5e333f2",
+                    "leftValue": "={{$json.jobTitle.toLowerCase()}}",
+                    "rightValue": "owner",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "f797d2a9-e567-48e1-b58b-fb96e43757ff",
+                    "leftValue": "={{$json.jobTitle.toLowerCase()}}\n",
+                    "rightValue": "marketing",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "d1908039-3200-460b-8919-f7358721a78f",
+                    "leftValue": "={{$json.jobTitle.toLowerCase()}}\n",
+                    "rightValue": "director",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "b454b358-539c-4dd0-bdc8-3ece338aa61a",
+                    "leftValue": "={{$json.jobTitle.toLowerCase()}}",
+                    "rightValue": "partner",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        528,
+        -48
+      ],
+      "id": "90206252-64a9-4af4-9145-1fb7c3309033",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"connection_note\": \"Hi {{ $json.name.split(' ')[0] }}, noticed you\u2019re leading {{ $json.companyName }}. I work with founders around automation and growth \u2014 would be great to connect and exchange notes.\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1040,
+        -544
+      ],
+      "id": "fe519e2e-90fc-40bd-9b05-baebab27fdb7",
+      "name": "founder",
+      "alwaysOutputData": false
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"connection_note\": \"Hi {{ $json.name.split(' ')[0] }}, noticed you\u2019re leading {{ $json.companyName }}. I work with founders around automation and growth \u2014 would be great to connect and exchange notes.\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1040,
+        -352
+      ],
+      "id": "21cd7f63-b4d2-40cb-8554-bd6c87574c7b",
+      "name": "ceo"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"connection_note\": \"Hi {{ $json.name.split(' ')[0] }}, noticed you\u2019re leading {{ $json.companyName }}. I work with founders around automation and growth \u2014 would be great to connect and exchange notes.\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1264,
+        608
+      ],
+      "id": "0bb84091-b130-4a9b-b6be-7dac3410a067",
+      "name": "ceo2"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"connection_note\": \"Hi {{ $json.name.split(' ')[0] }}, saw you\u2019re leading marketing at {{ $json.companyName }}. I work around automation and growth \u2014 would be great to connect and exchange notes.\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1040,
+        32
+      ],
+      "id": "f4bd2ffa-31a7-4466-a4aa-fb6c7b3fc49b",
+      "name": "marketing"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"connection_note\": \"Hi {{ $json.name.split(' ')[0] }}, noticed your leadership role at {{ $json.companyName }}. I work with teams around automation and growth \u2014 would be great to connect and exchange notes.\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1040,
+        224
+      ],
+      "id": "d758e0ae-71b5-4dc0-89bd-32398103bb58",
+      "name": "director"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"connection_note\": \"Hi {{ $json.name.split(' ')[0] }}, noticed you\u2019re a partner at {{ $json.companyName }}. I work with leadership teams around automation and growth \u2014 would be great to connect and exchange notes.\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1040,
+        416
+      ],
+      "id": "5d7c348c-da42-460d-b0a4-778a7e5976bd",
+      "name": "partner"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0fae837e-033b-4947-b051-bda9780003c0",
+              "leftValue": "={{ $json.companyName }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        208,
+        32
+      ],
+      "id": "0ee28e43-bde4-408b-a4a6-f24d64b73ccd",
+      "name": "Filter"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"connection_note\": \"Hi {{ $json.name.split(' ')[0] }}, noticed you\u2019re leading {{ $json.companyName }}. I work with founders around automation and growth \u2014 would be great to connect and exchange notes.\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1040,
+        -160
+      ],
+      "id": "14304380-5045-4912-b474-8938dc086b5b",
+      "name": "owner"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "={\n  \"connection_note\": \"Hi {{ $json.name.split(' ')[0] }}, noticed your role at {{ $json.companyName }}. I work around automation and growth \u2014 would be great to connect and exchange notes.\"\n}\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1264,
+        800
+      ],
+      "id": "d275ea4d-dd52-4d0c-8d6f-3605a0ba4aa8",
+      "name": "fallback"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{$json.jobTitle.toLowerCase()}}\n",
+                    "rightValue": "chief executive officer",
+                    "operator": {
+                      "type": "string",
+                      "operation": "contains"
+                    },
+                    "id": "5178b755-f5b7-49d2-9ef9-932813760009"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        1040,
+        704
+      ],
+      "id": "1769dd18-3622-42cd-b688-31f0f2f18f33",
+      "name": "Switch1"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1ynEXFWNHQjRgZ66dgqKbCHdpE-IPZwRNZhMGFr1jlI4",
+          "mode": "list",
+          "cachedResultName": "linkedin 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ynEXFWNHQjRgZ66dgqKbCHdpE-IPZwRNZhMGFr1jlI4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1653395015,
+          "mode": "list",
+          "cachedResultName": "India",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ynEXFWNHQjRgZ66dgqKbCHdpE-IPZwRNZhMGFr1jlI4/edit#gid=1653395015"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Connection note": "={{ $json.connection_note }}",
+            "Name": "={{ $('Switch').item.json.name }}",
+            "jobTitle": "={{ $('Switch').item.json.jobTitle }}",
+            "companyName": "={{ $('Switch').item.json.companyName }}",
+            "geography": "={{ $('Switch').item.json.geography }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SENT",
+              "displayName": "SENT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "jobTitle",
+              "displayName": "jobTitle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "companyName",
+              "displayName": "companyName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "geography",
+              "displayName": "geography",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Connection note",
+              "displayName": "Connection note",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1248,
+        -544
+      ],
+      "id": "388a5f8f-2d3c-42a9-8f21-80c8951c1bda",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1ynEXFWNHQjRgZ66dgqKbCHdpE-IPZwRNZhMGFr1jlI4",
+          "mode": "list",
+          "cachedResultName": "linkedin 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ynEXFWNHQjRgZ66dgqKbCHdpE-IPZwRNZhMGFr1jlI4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1653395015,
+          "mode": "list",
+          "cachedResultName": "India",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ynEXFWNHQjRgZ66dgqKbCHdpE-IPZwRNZhMGFr1jlI4/edit#gid=1653395015"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Connection note": "={{ $json.connection_note }}",
+            "Name": "={{ $('Switch').item.json.name }}",
+            "jobTitle": "={{ $('Switch').item.json.jobTitle }}",
+            "companyName": "={{ $('Switch').item.json.companyName }}",
+            "geography": "={{ $('Switch').item.json.geography }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SENT",
+              "displayName": "SENT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "jobTitle",
+              "displayName": "jobTitle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "companyName",
+              "displayName": "companyName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "geography",
+              "displayName": "geography",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Connection note",
+              "displayName": "Connection note",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1264,
+        -352
+      ],
+      "id": "9b792479-d0f1-4747-9da3-c88e3ac095a4",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1ynEXFWNHQjRgZ66dgqKbCHdpE-IPZwRNZhMGFr1jlI4",
+          "mode": "list",
+          "cachedResultName": "linkedin 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ynEXFWNHQjRgZ66dgqKbCHdpE-IPZwRNZhMGFr1jlI4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1653395015,
+          "mode": "list",
+          "cachedResultName": "India",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ynEXFWNHQjRgZ66dgqKbCHdpE-IPZwRNZhMGFr1jlI4/edit#gid=1653395015"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Connection note": "={{ $json.connection_note }}",
+            "Name": "={{ $('Switch').item.json.name }}",
+            "jobTitle": "={{ $('Switch').item.json.jobTitle }}",
+            "companyName": "={{ $('Switch').item.json.companyName }}",
+            "geography": "={{ $('Switch').item.json.geography }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SENT",
+              "displayName": "SENT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "jobTitle",
+              "displayName": "jobTitle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "companyName",
+              "displayName": "companyName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "geography",
+              "displayName": "geography",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Connection note",
+              "displayName": "Connection note",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1264,
+        -160
+      ],
+      "id": "6d097e53-160d-4e1b-8320-4289e7a76522",
+      "name": "Append row in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1ynEXFWNHQjRgZ66dgqKbCHdpE-IPZwRNZhMGFr1jlI4",
+          "mode": "list",
+          "cachedResultName": "linkedin 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ynEXFWNHQjRgZ66dgqKbCHdpE-IPZwRNZhMGFr1jlI4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1653395015,
+          "mode": "list",
+          "cachedResultName": "India",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ynEXFWNHQjRgZ66dgqKbCHdpE-IPZwRNZhMGFr1jlI4/edit#gid=1653395015"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Connection note": "={{ $json.connection_note }}",
+            "Name": "={{ $('Switch').item.json.name }}",
+            "jobTitle": "={{ $('Switch').item.json.jobTitle }}",
+            "companyName": "={{ $('Switch').item.json.companyName }}",
+            "geography": "={{ $('Switch').item.json.geography }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SENT",
+              "displayName": "SENT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "jobTitle",
+              "displayName": "jobTitle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "companyName",
+              "displayName": "companyName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "geography",
+              "displayName": "geography",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Connection note",
+              "displayName": "Connection note",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1280,
+        32
+      ],
+      "id": "23444116-be2c-4ee2-ae49-2c73174f0111",
+      "name": "Append row in sheet3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1ynEXFWNHQjRgZ66dgqKbCHdpE-IPZwRNZhMGFr1jlI4",
+          "mode": "list",
+          "cachedResultName": "linkedin 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ynEXFWNHQjRgZ66dgqKbCHdpE-IPZwRNZhMGFr1jlI4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1653395015,
+          "mode": "list",
+          "cachedResultName": "India",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ynEXFWNHQjRgZ66dgqKbCHdpE-IPZwRNZhMGFr1jlI4/edit#gid=1653395015"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Connection note": "={{ $json.connection_note }}",
+            "Name": "={{ $('Switch').item.json.name }}",
+            "jobTitle": "={{ $('Switch').item.json.jobTitle }}",
+            "companyName": "={{ $('Switch').item.json.companyName }}",
+            "geography": "={{ $('Switch').item.json.geography }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SENT",
+              "displayName": "SENT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "jobTitle",
+              "displayName": "jobTitle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "companyName",
+              "displayName": "companyName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "geography",
+              "displayName": "geography",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Connection note",
+              "displayName": "Connection note",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1280,
+        224
+      ],
+      "id": "1e5e2b42-5b24-4064-9c5c-ca7b9181d140",
+      "name": "Append row in sheet4",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1ynEXFWNHQjRgZ66dgqKbCHdpE-IPZwRNZhMGFr1jlI4",
+          "mode": "list",
+          "cachedResultName": "linkedin 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ynEXFWNHQjRgZ66dgqKbCHdpE-IPZwRNZhMGFr1jlI4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1653395015,
+          "mode": "list",
+          "cachedResultName": "India",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ynEXFWNHQjRgZ66dgqKbCHdpE-IPZwRNZhMGFr1jlI4/edit#gid=1653395015"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Connection note": "={{ $json.connection_note }}",
+            "Name": "={{ $('Switch').item.json.name }}",
+            "jobTitle": "={{ $('Switch').item.json.jobTitle }}",
+            "companyName": "={{ $('Switch').item.json.companyName }}",
+            "geography": "={{ $('Switch').item.json.geography }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SENT",
+              "displayName": "SENT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "jobTitle",
+              "displayName": "jobTitle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "companyName",
+              "displayName": "companyName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "geography",
+              "displayName": "geography",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Connection note",
+              "displayName": "Connection note",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1296,
+        416
+      ],
+      "id": "08b259aa-602a-4d5b-bcf7-f326ef8bf172",
+      "name": "Append row in sheet5",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1ynEXFWNHQjRgZ66dgqKbCHdpE-IPZwRNZhMGFr1jlI4",
+          "mode": "list",
+          "cachedResultName": "linkedin 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ynEXFWNHQjRgZ66dgqKbCHdpE-IPZwRNZhMGFr1jlI4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1653395015,
+          "mode": "list",
+          "cachedResultName": "India",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ynEXFWNHQjRgZ66dgqKbCHdpE-IPZwRNZhMGFr1jlI4/edit#gid=1653395015"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Connection note": "={{ $json.connection_note }}",
+            "Name": "={{ $('Switch').item.json.name }}",
+            "jobTitle": "={{ $('Switch').item.json.jobTitle }}",
+            "companyName": "={{ $('Switch').item.json.companyName }}",
+            "geography": "={{ $('Switch').item.json.geography }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SENT",
+              "displayName": "SENT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "jobTitle",
+              "displayName": "jobTitle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "companyName",
+              "displayName": "companyName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "geography",
+              "displayName": "geography",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Connection note",
+              "displayName": "Connection note",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1520,
+        608
+      ],
+      "id": "18535c97-6169-4eff-b6b2-62cbbe4799df",
+      "name": "Append row in sheet6",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1ynEXFWNHQjRgZ66dgqKbCHdpE-IPZwRNZhMGFr1jlI4",
+          "mode": "list",
+          "cachedResultName": "linkedin 1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ynEXFWNHQjRgZ66dgqKbCHdpE-IPZwRNZhMGFr1jlI4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1653395015,
+          "mode": "list",
+          "cachedResultName": "India",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1ynEXFWNHQjRgZ66dgqKbCHdpE-IPZwRNZhMGFr1jlI4/edit#gid=1653395015"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Connection note": "={{ $json.connection_note }}",
+            "Name": "={{ $('Switch').item.json.name }}",
+            "jobTitle": "={{ $('Switch').item.json.jobTitle }}",
+            "companyName": "={{ $('Switch').item.json.companyName }}",
+            "geography": "={{ $('Switch').item.json.geography }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "SENT",
+              "displayName": "SENT",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "jobTitle",
+              "displayName": "jobTitle",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "companyName",
+              "displayName": "companyName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "geography",
+              "displayName": "geography",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Connection note",
+              "displayName": "Connection note",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1520,
+        800
+      ],
+      "id": "3a35a5e7-8173-4ef6-8ef2-90bd74093085",
+      "name": "Append row in sheet7",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "founder",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "ceo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "owner",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "marketing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "director",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "partner",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Switch1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch1": {
+      "main": [
+        [
+          {
+            "node": "ceo2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "fallback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "founder": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ceo": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "owner": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "marketing": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "director": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "partner": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ceo2": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet6",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fallback": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet7",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "7f35a21c-bbed-449e-90e5-01496e7f2165",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "702a7baddd3fdb480012ee407d25716d9e235460dde148c830592c99ca1999a1"
+  },
+  "id": "7IKpeDLPrq2jk0Cp",
+  "tags": []
+}

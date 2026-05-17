@@ -1,35 +1,41 @@
 {
-  "name": "Vector database (RAG Knowledge Base)",
+  "name": "Vector database(rag knowledge base)",
   "nodes": [
     {
       "parameters": {},
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
-      "position": [ -80, -64 ],
-      "id": "manual-trigger-id",
-      "name": "When clicking ‘Execute workflow’"
+      "position": [
+        -80,
+        -64
+      ],
+      "id": "f53a28e7-33c1-4e76-9bb4-54451693243c",
+      "name": "When clicking \u2018Execute workflow\u2019"
     },
     {
       "parameters": {
         "operation": "download",
         "fileId": {
           "__rl": true,
-          "value": "REPLACE_WITH_YOUR_DRIVE_FILE_ID",
+          "value": "1hF0Gg6iDioj0z3h7YLCJg9dXRjMErI07",
           "mode": "list",
-          "cachedResultName": "Knowledge_Base_Document.pdf",
-          "cachedResultUrl": "https://drive.google.com/file/d/REPLACE_WITH_YOUR_DRIVE_FILE_ID/view"
+          "cachedResultName": "AWS Service Terms.pdf",
+          "cachedResultUrl": "https://drive.google.com/file/d/1hF0Gg6iDioj0z3h7YLCJg9dXRjMErI07/view?usp=drivesdk"
         },
         "options": {}
       },
       "type": "n8n-nodes-base.googleDrive",
       "typeVersion": 3,
-      "position": [ 128, -64 ],
-      "id": "google-drive-download-id",
+      "position": [
+        128,
+        -64
+      ],
+      "id": "9ef355ef-b1fe-40b1-91e1-7b6227ad55ea",
       "name": "Download file",
       "credentials": {
         "googleDriveOAuth2Api": {
-          "id": "CREDENTIAL_ID_HERE",
-          "name": "Google Drive account"
+          "id": "REDACTED",
+          "name": "REDACTED"
         }
       }
     },
@@ -46,13 +52,16 @@
       },
       "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
       "typeVersion": 1.3,
-      "position": [ 416, -64 ],
-      "id": "supabase-vector-store-id",
+      "position": [
+        416,
+        -64
+      ],
+      "id": "f2bec014-2440-473f-992d-1042e46817ee",
       "name": "Supabase Vector Store",
       "credentials": {
         "supabaseApi": {
-          "id": "CREDENTIAL_ID_HERE",
-          "name": "Supabase Account"
+          "id": "REDACTED",
+          "name": "REDACTED"
         }
       }
     },
@@ -67,8 +76,11 @@
       },
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "typeVersion": 1.1,
-      "position": [ 512, 160 ],
-      "id": "data-loader-id",
+      "position": [
+        512,
+        160
+      ],
+      "id": "e42ac3e7-cb5e-418b-9667-d51e895682c8",
       "name": "Default Data Loader"
     },
     {
@@ -77,13 +89,16 @@
       },
       "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
       "typeVersion": 1,
-      "position": [ 384, 160 ],
-      "id": "gemini-embeddings-id",
+      "position": [
+        384,
+        160
+      ],
+      "id": "5e86a583-1356-4a3d-8361-31e5e8170815",
       "name": "Embeddings Google Gemini",
       "credentials": {
         "googlePalmApi": {
-          "id": "CREDENTIAL_ID_HERE",
-          "name": "Google Gemini Api account"
+          "id": "REDACTED",
+          "name": "REDACTED"
         }
       }
     },
@@ -95,14 +110,17 @@
       },
       "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
       "typeVersion": 1,
-      "position": [ 592, 368 ],
-      "id": "text-splitter-id",
+      "position": [
+        592,
+        368
+      ],
+      "id": "ddb631c5-aff9-480f-82a5-390e461c04bd",
       "name": "Recursive Character Text Splitter"
     },
     {
       "parameters": {
         "formTitle": "DOC SUB",
-        "formDescription": "Submit the document to add to the knowledge base",
+        "formDescription": "submit the doc to add into knowledge base",
         "formFields": {
           "values": [
             {
@@ -116,23 +134,92 @@
       },
       "type": "n8n-nodes-base.formTrigger",
       "typeVersion": 2.3,
-      "position": [ -80, -256 ],
-      "id": "form-trigger-id",
+      "position": [
+        -80,
+        -256
+      ],
+      "id": "b78faff2-ea53-4e49-a06c-ed61de1ee01d",
       "name": "On form submission",
-      "webhookId": "REPLACE_WITH_YOUR_WEBHOOK_ID"
+      "webhookId": "REDACTED"
     }
   ],
   "pinData": {},
   "connections": {
-    "When clicking ‘Execute workflow’": { "main": [[ { "node": "Download file", "type": "main", "index": 0 } ]] },
-    "Download file": { "main": [[ { "node": "Supabase Vector Store", "type": "main", "index": 0 } ]] },
-    "Default Data Loader": { "ai_document": [[ { "node": "Supabase Vector Store", "type": "ai_document", "index": 0 } ]] },
-    "Embeddings Google Gemini": { "ai_embedding": [[ { "node": "Supabase Vector Store", "type": "ai_embedding", "index": 0 } ]] },
-    "Recursive Character Text Splitter": { "ai_textSplitter": [[ { "node": "Default Data Loader", "type": "ai_textSplitter", "index": 0 } ]] },
-    "On form submission": { "main": [[ { "node": "Supabase Vector Store", "type": "main", "index": 0 } ]] }
+    "When clicking \u2018Execute workflow\u2019": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
   },
   "active": false,
-  "settings": { "executionOrder": "v1" },
-  "meta": { "instanceId": "REPLACE_WITH_INSTANCE_ID" },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0c439355-8edd-4b2d-968b-ab089ed12750",
+  "meta": {
+    "instanceId": "702a7baddd3fdb480012ee407d25716d9e235460dde148c830592c99ca1999a1"
+  },
+  "id": "ZRqXLfneEPxtu7Tk",
   "tags": []
 }

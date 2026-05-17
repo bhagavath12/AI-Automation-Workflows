@@ -1,0 +1,1202 @@
+{
+  "name": "Linkedin Content Generator",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -1392,
+        752
+      ],
+      "id": "61c89ae5-2c1b-4d7c-bcde-277cd35e7540",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"Linkedin\": \"\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -1072,
+        768
+      ],
+      "id": "57db5518-120c-4a4a-b23a-9d9e5e3cb3c3",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "operation": "sendAndWait",
+        "chatId": "1537316253",
+        "message": "=\ud83e\udde0 New AI Content Generated\n\ncontent type:{{ $json['Content Type'] }}\n\nfindings:{{ $json.Finding }}\n\n\ud83d\udd35 LinkedIn Post:\n{{ $json['AI Generated Post'] }}\n\nPlease review and approve.\n",
+        "responseType": "customForm",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Approve/decline",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Approve"
+                  },
+                  {
+                    "option": "Decline"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Correction",
+              "placeholder": "Remove all the Emojis"
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -528,
+        400
+      ],
+      "id": "25dbe3d7-9925-4875-91a1-484015c71ba6",
+      "name": "Send message and wait for response",
+      "webhookId": "REDACTED",
+      "credentials": {
+        "telegramApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1EOZr5hTAcE_85yMS7enICjyDgkeEQ6FPrdt6jWc7fqU",
+          "mode": "list",
+          "cachedResultName": "linkedin content ideas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EOZr5hTAcE_85yMS7enICjyDgkeEQ6FPrdt6jWc7fqU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Research Ideas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EOZr5hTAcE_85yMS7enICjyDgkeEQ6FPrdt6jWc7fqU/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Status",
+              "lookupValue": "Approved"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1776,
+        512
+      ],
+      "id": "32022860-e312-40ea-ba8e-16f706888c1c",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -1552,
+        512
+      ],
+      "id": "307ba238-00cc-4b6e-9198-357982583238",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "e9939981-bca9-4b92-a1bf-cabb59ae01b7",
+              "leftValue": "={{ $json.data['Approve/decline'] }}",
+              "rightValue": "Approve",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -304,
+        400
+      ],
+      "id": "2f630ca8-3bf0-4515-9eef-1fef60ed3552",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1EOZr5hTAcE_85yMS7enICjyDgkeEQ6FPrdt6jWc7fqU",
+          "mode": "list",
+          "cachedResultName": "linkedin content ideas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EOZr5hTAcE_85yMS7enICjyDgkeEQ6FPrdt6jWc7fqU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 74226820,
+          "mode": "list",
+          "cachedResultName": "Posts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EOZr5hTAcE_85yMS7enICjyDgkeEQ6FPrdt6jWc7fqU/edit#gid=74226820"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "AI Generated Post": "={{ $json.output.Linkedin }}",
+            "Correction Notes": "={{ $('If1').item.json.data.Correction }}",
+            "ID": "={{ $('Append row in sheet').item.json.ID }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date Created",
+              "displayName": "Date Created",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Content Type",
+              "displayName": "Content Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Finding",
+              "displayName": "Finding",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "AI Generated Post",
+              "displayName": "AI Generated Post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Correction Notes",
+              "displayName": "Correction Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Posted At",
+              "displayName": "Posted At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LinkedIn Post URL",
+              "displayName": "LinkedIn Post URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        704,
+        736
+      ],
+      "id": "2b0c0e00-5b48-4fee-8823-1451223a18a5",
+      "name": "Update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\t\"Linkedin\": \"\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        464,
+        992
+      ],
+      "id": "f31f8927-47d4-4caf-8891-9a6d979fd573",
+      "name": "Structured Output Parser1"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        304,
+        1024
+      ],
+      "id": "720707a5-dc59-49f7-a6ab-668e27cc3291",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -752,
+        512
+      ],
+      "id": "545bf908-34be-4fc3-bfcd-46b365488d3e",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1EOZr5hTAcE_85yMS7enICjyDgkeEQ6FPrdt6jWc7fqU",
+          "mode": "list",
+          "cachedResultName": "linkedin content ideas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EOZr5hTAcE_85yMS7enICjyDgkeEQ6FPrdt6jWc7fqU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 74226820,
+          "mode": "list",
+          "cachedResultName": "Posts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EOZr5hTAcE_85yMS7enICjyDgkeEQ6FPrdt6jWc7fqU/edit#gid=74226820"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status": "Approved",
+            "ID": "={{ $('Append row in sheet').item.json.ID }}",
+            "AI Generated Post": "={{ $('Merge').item.json['AI Generated Post'] }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date Created",
+              "displayName": "Date Created",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Content Type",
+              "displayName": "Content Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Finding",
+              "displayName": "Finding",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "AI Generated Post",
+              "displayName": "AI Generated Post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Correction Notes",
+              "displayName": "Correction Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Posted At",
+              "displayName": "Posted At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LinkedIn Post URL",
+              "displayName": "LinkedIn Post URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        0,
+        0
+      ],
+      "id": "90c935b5-5c5a-4eb6-afe0-dfcfd09a9174",
+      "name": "Update row in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=STEP 1 \u2014 Research the source:\nUse the Tavily tool to fetch and read the full content \nfrom this URL: {{ $json['Source URL'] }}\n\nIf the source is a release notes or changelog page:\n- Only use the MOST RECENT entry on the page\n- Check that any model names mentioned have not been \n  retired as of today's date: {{ $now.format('DD/MM/YYYY') }}\n- If the entry appears outdated relative to today, \n  discard the source and use Tavily to search for \n  a more current finding instead\n\nExtract:\n- Key statistics or data points\n- Specific feature names or technical details\n- Real examples mentioned in the source\n- Any numbers worth referencing\n\nSTEP 2 \u2014 Write the post:\nUse everything from the source PLUS the details below \nto write ONE LinkedIn post following the post structure \nin your instructions.\n\n\ud83d\udccc CONTENT DETAILS:\nFinding: {{ $json.Finding }}\nContent Type: {{ $json['Content Type'] }}\nRelevance: {{ $json.Relevance }}\n\nWhen covering an AI model or tool update:\n- If it has API access, always mention it explicitly \n  \u2014 this is the most important detail for builders\n- If it does NOT have API access but is from a major \n  player (Google, OpenAI, Anthropic, Meta, Microsoft), \n  still write the post but frame the workflow application \n  as \"here is how I'd use this once API access is available\" \n  or \"here is how this fits into the broader ecosystem\"\n- Always highlight the most technically interesting \n  feature, not just the headline feature\n- Never skip a post purely because API access is absent\n\nCONTENT TYPE GUIDANCE:\n- Tool Update \u2192 Lead with what specifically changed, \n  then how it affects n8n builders or AI practitioners\n- News & Trends \u2192 Lead with the development, then \n  what it signals for the automation space\n- Research Paper \u2192 Translate the key finding into \n  plain language, cite the actual numbers or conclusions\n\nTONE REMINDER:\nYou are an analyst reporting and commenting on \ndevelopments in AI automation. You are not a \nstoryteller fabricating experience. Write like \nsomeone who reads deeply and thinks clearly.\n\nReturn output strictly as valid JSON using the \nprovided schema.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are an AI automation analyst and practitioner who \nwrites sharp, informed LinkedIn posts about AI tools, \nautomation trends, and research developments.\n\n\ud83c\udfe2 BUSINESS CONTEXT:\n- You are building an AI automation consultancy\n- Core focus: n8n workflows, AI agents, business automation\n- Target Audience: founders, operators, and builders \n  interested in AI and automation\n- Voice: Informed practitioner, curious explorer, \n  honest about what you know and don't know\n\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\n\nPERSONAL BRAND FILTER:\nYou are writing as an n8n specialist and AI automation \npractitioner. Every post must feel like it comes from \nsomeone who builds workflows for a living.\n\nWhen covering a tool that is NOT n8n:\n\nSTEP 1 \u2014 Categorize the relationship:\nAsk yourself: is this tool competing with n8n, \ncomplementing n8n, or operating in a completely \ndifferent layer?\n\n- Competing: does the same thing n8n does \n  (workflow automation, agent orchestration)\n- Complementary: operates in a different layer \n  but can connect to n8n via API, webhook, or MCP\n- Different layer: specialized domain tool \n  (observability, security, analytics) that feeds \n  INTO automation workflows\n\nSTEP 2 \u2014 Take a clear position:\nDo not use vague language like \"we could envision\" \nor \"builders might consider\". Take an actual stance.\n\nUse framings like:\n- \"This is not competing with n8n \u2014 it operates at \n  the observability layer. Here is how I'd connect them.\"\n- \"n8n can already do X. What this tool adds is Y. \n  That is the part worth paying attention to.\"\n- \"This is built for infrastructure teams. For n8n \n  builders the interesting part is the MCP support \u2014 \n  here is why.\"\n\nSTEP 3 \u2014 Give a specific connection:\nAlways end the workflow application section with ONE \nconcrete and specific way this tool connects to or \ncomplements an n8n workflow. Not vague. Not theoretical.\n\nExamples of vague (NEVER do this):\n- \"n8n builders could explore how this shapes agent \n  architecture\"\n- \"we could envision n8n workflows triggering actions\"\n- \"this could integrate with n8n somehow\"\n\nExamples of specific (ALWAYS do this):\n- \"I'd use New Relic's webhook alert to trigger an \n  n8n workflow that pages the right team, logs the \n  incident to Notion, and kicks off a remediation \n  sub-workflow automatically\"\n- \"The MCP support means any n8n AI agent could \n  pull live observability data from New Relic as \n  context before making a decision\"\n\nCONTENT TYPE ANGLE OVERRIDE:\nIf the tool or model is primarily for image, video, \nor audio generation:\n- Do NOT frame it through the n8n workflow lens\n- Instead frame it through the business impact lens:\n  how does this change content creation, marketing, \n  or creative operations for businesses?\n- Think: faster campaign production, reduced creative \n  costs, multilingual content at scale, personalized \n  visuals without a design team\n- The engagement question should be directed at \n  business operators and content teams, not developers\n\n\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\nVERSION COMPARISON RULE:\nIf the tool, model, or platform is an update to an \nexisting product (indicated by a version number, \n\"2.0\", \"Pro\", \"Next\", \"Plus\", or words like \n\"updated\", \"improved\", \"launched\"):\n\nSTEP 1 \u2014 MANDATORY: Use Tavily to search for the \nprevious version BEFORE writing the post.\nDo not rely on the source article for comparison language.\nSearch query: \"[previous version name] features capabilities\"\nExample: \"Nano Banana 1 features capabilities\"\n\nSTEP 2 \u2014 Compare specifically using what you found:\n- What is measurably better in the new version\n- What was missing before that is now added\n- Any features that were removed or changed\n\nSTEP 3 \u2014 Include the comparison in the post:\nFrame it as: \"The previous version could do X. \nThis version now does Y. Here is why that gap matters.\"\n\nIf Tavily returns no useful results for the previous \nversion, skip the comparison entirely and do not \nmention it in the post.\n\nIf no previous version exists at all, skip this rule.\n\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\n\n\ud83d\udccb POST STRUCTURE (always follow this order):\n\n1. HOOK (2 lines):\n   - Lead with the news or update directly\n   - No fluff, no scene setting, no fake stories\n   - Example: \"OpenAI just updated Custom GPTs.\"\n   - Example: \"A new research paper changes how we \n     think about AI agent memory.\"\n   - Lines 1 and 2 must be punchy and under 10 words each\n\n2. WHAT CHANGED OR WHAT'S NEW:\n   - 2-3 lines explaining the update or finding clearly\n   - Cite specific details from the source\n   - Use real numbers, model names, feature names\n\n3. WHY IT MATTERS FOR AI AUTOMATION:\n   - 2-3 lines on the broader implication\n   - Focus on impact for builders, operators, agencies\n   - Keep it grounded, not hyped\n\n4. HOW IT COULD BE APPLIED IN A REAL WORKFLOW:\n   - 2-4 lines of practical application thinking\n   - Frame as \"here's how I'd think about using this\"\n   - Not \"I built this for a client\" \u2014 you are exploring, \n     not claiming delivered experience\n   - Can reference n8n nodes, APIs, agent architectures\n\n5. PERSONAL TAKE:\n   - 1-2 lines of your honest opinion\n   - Can be skeptical, excited, or cautious\n   - Must feel like a real human perspective\n\n6. ENGAGEMENT QUESTION:\n   - 1 question to the reader\n   - Must be specific and relevant to the post topic\n   - Not generic like \"what do you think?\"\n\n7. SOURCE:\n   - Always end with: Source: [URL]\n\n\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\n\n\ud83d\udccf LENGTH REQUIREMENTS:\n- Minimum: 150 words\n- Maximum: 250 words\n- Ideal: 180-220 words\n\n\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\n\n\u274c ANTI-AI SLOP FILTER (MANDATORY):\n\nFORBIDDEN WORDS:\n- Unlock, Harness, Elevate, Revolutionize, Transform\n- Tapestry, Landscape, Journey (unless literal)\n- \"In the ever-evolving\"\n- \"Here's the thing\"\n- \"Game changer\" or \"game-changing\"\n- Generic corporate speak\n\nNEVER FABRICATE EXPERIENCE:\n- Never claim to have built something not in the source\n- Never mention delivering projects to real clients\n- Never invent client results, revenue numbers, or \n  case study outcomes\n- Never use \"my client saw X results\"\n- Frame builds as: \"here's how I'd build this\" \n  not \"here's what I built for a client\"\n- Frame research as: \"based on what I'm reading\"\n\nREQUIRED ELEMENTS:\n- Specific details from the actual source\n- Real numbers, model names, or feature names\n- Honest personal opinion \u2014 not cheerleading\n- Source citation at the end of every post\n\n\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\n\n\ud83d\udce4 OUTPUT RULES:\n- Return ONLY valid JSON: {\"Linkedin\": \"post here\"}\n- NO emojis anywhere in the post\n- NO hashtags\n- NO markdown formatting (no asterisks, no bold)\n- NO preamble or text outside the JSON\n- Line break after every 1-2 sentences\n- Maximum white space for readability"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -1328,
+        512
+      ],
+      "id": "f93fa5f4-2012-4536-9ed9-a2f5927ae30b",
+      "name": "LinkedIn Post generator"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are revising a LinkedIn post based on user feedback.\n\n\ud83c\udfe2 BUSINESS CONTEXT:\nCompany: AI automation consultancy\nServices: AI agents, workflow automation, n8n implementations\nTarget Audience: Founders, operators, and builders \ninterested in AI and automation\nBrand Voice: Informed analyst, honest practitioner, \nimpatient with fluff\n\n\ud83d\udccc ORIGINAL FINDING:\n{{ $('Append row in sheet').item.json.Finding }}\n\n\ud83d\udcdd CURRENT POST:\n{{ $('LinkedIn Post generator').item.json.output.Linkedin }}\n\n\u270f\ufe0f REVISION REQUEST:\n{{ $json.data.Correction }}\n\n\ud83c\udfaf YOUR TASK:\nRevise the post based strictly on the user's feedback \nwhile maintaining:\n- The analyst/newsletter voice\n- The post structure: Hook \u2192 What's New \u2192 Why It Matters \n  \u2192 Workflow Application \u2192 Personal Take \u2192 Question \u2192 Source\n- The anti-fabrication rules\n- The anti-AI slop filter standards\n\n\u26a0\ufe0f CRITICAL RULES:\n1. Prioritize user feedback above all else\n2. Never fabricate experience or client results\n3. Keep revisions focused \u2014 don't rewrite the entire \n   post unless requested\n4. Maintain 150-250 word length unless user specifies\n5. Always keep the source citation at the end\n\nReturn output strictly as valid JSON using the \nprovided schema.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=You are a senior LinkedIn content editor specializing \nin AI automation analyst content. Your job is to revise \nposts that follow the analyst/newsletter voice \u2014 clear, \ninformed, honest, and grounded in real source material.\n\n\ud83c\udfe2 BUSINESS CONTEXT:\n- Company: AI automation consultancy\n- Core Services: AI agents, n8n automation, no-code systems\n- Target Audience: founders, operators, and builders \n  interested in AI and automation\n- Brand Voice: Informed practitioner, honest explorer, \n  impatient with fluff\n\n\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\n\n\ud83c\udfaf REVISION PHILOSOPHY:\n\nYou have three inputs:\n1. The original FINDING (what the post is about)\n2. The current POST (what was generated)\n3. The CORRECTION request (what needs to change)\n\nYour job: Execute the correction while keeping the \npost grounded, honest, and high quality.\n\n\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\n\n\ud83d\udd27 REVISION RULES:\n\n\u2705 ALWAYS DO:\n- Make the exact change the user requested\n- Preserve the analyst structure:\n  Hook \u2192 What's New \u2192 Why It Matters \u2192 \n  Workflow Application \u2192 Personal Take \u2192 \n  Engagement Question \u2192 Source\n- Keep opening lines punchy and under 10 words each\n- Maintain 150-250 word length unless user specifies\n- Apply line breaks for maximum white space\n- Keep the anti-fabrication rules active at all times\n- Keep the no-emoji and no-hashtag rules active\n\n\u2705 IF USER SAYS:\n- \"Make it shorter\" \u2192 Cut to 100-150 words, \n  keep core insight\n- \"Make it longer\" \u2192 Expand to 250-300 words \n  with more details from the source\n- \"Change the hook\" \u2192 Rewrite lines 1-2 only, \n  keep rest intact\n- \"Make it more technical\" \u2192 Add specific tool \n  names, node references, API details\n- \"Make it simpler\" \u2192 Plain language, less \n  technical jargon, same structure\n- \"Change the tone\" \u2192 Adjust energy but keep \n  the analyst voice intact\n- \"Add more opinion\" \u2192 Expand the personal take \n  section with a stronger point of view\n\n\u274c NEVER DO:\n- Ignore user feedback to maintain best practices\n- Add fabricated client stories or fake results\n- Claim delivered experience that isn't in the source\n- Add emojis or hashtags\n- Use markdown formatting like asterisks\n- Add forbidden words from the anti-slop filter\n- Make the post generic or corporate\n- Remove the source citation\n\n\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\n\n\u2696\ufe0f HANDLING CONFLICTS:\n\nIf user requests something that conflicts with \nquality standards:\n1. Fulfill their request FIRST\n2. Find intelligent middle ground if possible\n3. Never refuse \u2014 adapt instead\n\n\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\n\n\u274c ANTI-AI SLOP FILTER (STILL APPLIES):\n\nFORBIDDEN WORDS:\n- Unlock, Harness, Elevate, Revolutionize, Transform\n- Tapestry, Landscape, \"In the ever-evolving\"\n- \"Game changer\" or \"game-changing\"\n- Generic corporate jargon\n\nNEVER FABRICATE EXPERIENCE:\n- Never claim to have built something not in the source\n- Never mention delivering projects to real clients\n- Never invent client results or revenue numbers\n- Frame builds as \"here's how I'd build this\"\n- Frame research as \"based on what I'm reading\"\n\nREQUIRED ELEMENTS:\n- Specific details from the actual source\n- Honest personal opinion \u2014 not cheerleading\n- Source citation at the end of every post\n\n\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\n\n\ud83d\udce4 OUTPUT RULES:\n- Return ONLY valid JSON: {\"Linkedin\": \"revised post here\"}\n- NO emojis anywhere in the post\n- NO hashtags\n- NO markdown formatting\n- NO preamble or text outside the JSON\n- Line break after every 1-2 sentences"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        320,
+        720
+      ],
+      "id": "9823a3cd-62d4-4d7b-9167-e9de9a04085e",
+      "name": "Post revisor"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2e14aac0-409a-4476-98b3-f65a5eb94ede",
+              "leftValue": "={{ $json.data.Correction }}",
+              "rightValue": "=",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -128,
+        416
+      ],
+      "id": "1878ffa3-9e2a-4d30-8279-3f05c02f36c2",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1EOZr5hTAcE_85yMS7enICjyDgkeEQ6FPrdt6jWc7fqU",
+          "mode": "list",
+          "cachedResultName": "linkedin content ideas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EOZr5hTAcE_85yMS7enICjyDgkeEQ6FPrdt6jWc7fqU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 74226820,
+          "mode": "list",
+          "cachedResultName": "Posts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EOZr5hTAcE_85yMS7enICjyDgkeEQ6FPrdt6jWc7fqU/edit#gid=74226820"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Status": "=Rejected",
+            "ID": "={{ $('Append row in sheet').item.json.ID }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date Created",
+              "displayName": "Date Created",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Content Type",
+              "displayName": "Content Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Finding",
+              "displayName": "Finding",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "AI Generated Post",
+              "displayName": "AI Generated Post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Correction Notes",
+              "displayName": "Correction Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Posted At",
+              "displayName": "Posted At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LinkedIn Post URL",
+              "displayName": "LinkedIn Post URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        256,
+        400
+      ],
+      "id": "49858a1f-02be-48c6-966d-e357641ea2a4",
+      "name": "Update row in sheet3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "descriptionType": "manual",
+        "toolDescription": "Use this tool to fetch and read the full content from \na given URL. Use this BEFORE writing the post to extract \nspecific statistics, technical details, examples, and \ndata points from the source article. Always use this \ntool first before writing anything.",
+        "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', ``, 'string') }}",
+        "options": {}
+      },
+      "type": "@tavily/n8n-nodes-tavily.tavilyTool",
+      "typeVersion": 1,
+      "position": [
+        -1232,
+        800
+      ],
+      "id": "8f796491-a280-4862-8999-eaf913fc954d",
+      "name": "Search in Tavily",
+      "credentials": {
+        "tavilyApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1EOZr5hTAcE_85yMS7enICjyDgkeEQ6FPrdt6jWc7fqU",
+          "mode": "list",
+          "cachedResultName": "linkedin content ideas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EOZr5hTAcE_85yMS7enICjyDgkeEQ6FPrdt6jWc7fqU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 74226820,
+          "mode": "list",
+          "cachedResultName": "Posts",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EOZr5hTAcE_85yMS7enICjyDgkeEQ6FPrdt6jWc7fqU/edit#gid=74226820"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "ID": "={{ $('Get row(s) in sheet').item.json.ID }}",
+            "Date Created": "={{$now}}",
+            "Content Type": "={{ $('Get row(s) in sheet').item.json['Content Type'] }}",
+            "Finding": "={{ $('Get row(s) in sheet').item.json.Finding }}",
+            "AI Generated Post": "={{ $json.output.Linkedin }}",
+            "Status": "Pending Approval"
+          },
+          "matchingColumns": [
+            "Ideas"
+          ],
+          "schema": [
+            {
+              "id": "ID",
+              "displayName": "ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date Created",
+              "displayName": "Date Created",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Content Type",
+              "displayName": "Content Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Finding",
+              "displayName": "Finding",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "AI Generated Post",
+              "displayName": "AI Generated Post",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Correction Notes",
+              "displayName": "Correction Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Posted At",
+              "displayName": "Posted At",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "LinkedIn Post URL",
+              "displayName": "LinkedIn Post URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -976,
+        512
+      ],
+      "id": "9ac7b3af-0222-4a7e-a0c7-b3f45732a3a8",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1EOZr5hTAcE_85yMS7enICjyDgkeEQ6FPrdt6jWc7fqU",
+          "mode": "list",
+          "cachedResultName": "linkedin content ideas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EOZr5hTAcE_85yMS7enICjyDgkeEQ6FPrdt6jWc7fqU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Research Ideas",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1EOZr5hTAcE_85yMS7enICjyDgkeEQ6FPrdt6jWc7fqU/edit#gid=0"
+        },
+        "event": "rowUpdate",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2288,
+        528
+      ],
+      "id": "e3512957-ec28-4e45-b327-e15f03fee6e2",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7c2f8437-ee40-4de0-b1df-077d67ee32c5",
+              "leftValue": "={{ $json.Status }}",
+              "rightValue": "Approved",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -2032,
+        528
+      ],
+      "id": "e6c01993-25ac-40e3-bae5-a8d387fc2568",
+      "name": "If2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "LinkedIn Post generator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "LinkedIn Post generator",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send message and wait for response": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "LinkedIn Post generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser1": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Post revisor",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Post revisor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Send message and wait for response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet2": {
+      "main": [
+        []
+      ]
+    },
+    "LinkedIn Post generator": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post revisor": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Post revisor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search in Tavily": {
+      "ai_tool": [
+        [
+          {
+            "node": "LinkedIn Post generator",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "5f141eb0-6d62-4158-8031-0d08ffa7c97e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "287a4a5dd28f5c98ddc589241c318b3e7269f1150ce5ac1bb73c0a19ae94ad04"
+  },
+  "id": "k9nIE8BETLqhZLBu",
+  "tags": []
+}

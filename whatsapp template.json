@@ -1,0 +1,235 @@
+{
+  "name": "whatsapp template",
+  "nodes": [
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1vOU-__FwaXQuG-ASz1TwFO2iKSN9sQ0Eb7Yufa4CCyI",
+          "mode": "list",
+          "cachedResultName": "whatsapp test",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1vOU-__FwaXQuG-ASz1TwFO2iKSN9sQ0Eb7Yufa4CCyI/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1vOU-__FwaXQuG-ASz1TwFO2iKSN9sQ0Eb7Yufa4CCyI/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $json.Name }}",
+            "Number": "=91{{ $json['Phone number'] }}",
+            "Company Size": "={{ $json['company size'] }}",
+            "did we reachout": "no",
+            "What they want to automate": "={{ $json['What you wanna automate'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Number",
+              "displayName": "Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company Size",
+              "displayName": "Company Size",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "did we reachout",
+              "displayName": "did we reachout",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "What they want to automate",
+              "displayName": "What they want to automate",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -288,
+        688
+      ],
+      "id": "31dbd592-b676-4f13-850a-ff6753a93d2a",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "phoneNumberId": "1052550197934265",
+        "recipientPhoneNumber": "=91{{ $json.Number }}",
+        "template": "n8n_demo|en"
+      },
+      "type": "n8n-nodes-base.whatsApp",
+      "typeVersion": 1.1,
+      "position": [
+        -80,
+        688
+      ],
+      "id": "8ceec81d-a276-4374-ac5f-dee5c86b1833",
+      "name": "Send template",
+      "webhookId": "REDACTED",
+      "credentials": {
+        "whatsAppApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "page": {
+          "__rl": true,
+          "value": "997052043495855",
+          "mode": "list",
+          "cachedResultName": "N8N Automations",
+          "cachedResultUrl": "https://facebook.com/997052043495855"
+        },
+        "form": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.facebookLeadAdsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        576
+      ],
+      "id": "85a16774-692a-4c3a-95a3-98d9b3d32a30",
+      "name": "Facebook Lead Ads Trigger",
+      "webhookId": "REDACTED",
+      "credentials": {
+        "facebookLeadAdsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "Demo",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Phone number",
+              "fieldType": "number",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -624,
+        768
+      ],
+      "id": "99acfa15-437c-4468-b7d1-385120fe2336",
+      "name": "On form submission",
+      "webhookId": "REDACTED"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Send template",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Facebook Lead Ads Trigger": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "e20dd4fd-942e-4672-b56e-449fb0d7cd26",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "287a4a5dd28f5c98ddc589241c318b3e7269f1150ce5ac1bb73c0a19ae94ad04"
+  },
+  "id": "MLkkeVawaHNFBKgp",
+  "tags": []
+}

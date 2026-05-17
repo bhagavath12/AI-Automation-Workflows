@@ -3,29 +3,38 @@
   "nodes": [
     {
       "parameters": {
-        "updates": [ "message" ],
+        "updates": [
+          "message"
+        ],
         "additionalFields": {}
       },
       "type": "n8n-nodes-base.telegramTrigger",
       "typeVersion": 1.2,
-      "position": [ -304, -32 ],
-      "id": "telegram-trigger-id",
+      "position": [
+        -304,
+        -32
+      ],
+      "id": "8d3b290a-78d6-477b-b26f-26eae91598b7",
       "name": "Telegram Trigger",
+      "webhookId": "REDACTED",
       "credentials": {
         "telegramApi": {
-          "id": "CREDENTIAL_ID",
-          "name": "Telegram account"
+          "id": "REDACTED",
+          "name": "REDACTED"
         }
       }
     },
     {
       "parameters": {
-        "jsCode": "// Logic for parsing product name, type, description, and display mode\n// ... (Original JS logic preserved) ..."
+        "jsCode": "// n8n Code node (typeVersion 2)\n// Output: single item with only 4 specific fields\n\nconst msg = $input.first().json.message || {};\nconst caption = (msg.caption && msg.caption.trim()) || (msg.text && msg.text.trim()) || '';\n\nfunction stripQuotesAndTrim(s) {\n  if (typeof s !== 'string') return '';\n  return s.replace(/^[\"']|[\"']$/g, '').trim();\n}\n\n// Updated Map: Focuses only on your 4 requirements\nconst aliasMap = {\n  productName: ['product name', 'name'],\n  productType: ['product type', 'type'],\n  description: ['discription', 'description', 'desc'], // Added 'discription' to catch the typo\n  displayMode: ['display mode', 'displaymode', 'mode']\n};\n\nconst keyLookup = {};\nfor (const [canon, aliases] of Object.entries(aliasMap)) {\n  aliases.forEach(a => keyLookup[a.toLowerCase()] = canon);\n}\n\n// Initializing only the requested fields\nconst parsed = {\n  productName: '',\n  productType: '',\n  description: '',\n  displayMode: 'product-only'\n};\n\nif (caption && typeof caption === 'string') {\n  const lines = caption.replace(/\\r/g, '').split('\\n').map(l => l.trim()).filter(Boolean);\n  for (const line of lines) {\n    const colonIndex = line.indexOf(':');\n    if (colonIndex === -1) continue;\n    \n    const rawKey = line.substring(0, colonIndex).trim().toLowerCase();\n    const rawVal = line.substring(colonIndex + 1).trim();\n    const mappedKey = keyLookup[rawKey];\n    \n    if (!mappedKey) continue;\n    \n    let cleanVal = stripQuotesAndTrim(rawVal);\n\n    if (mappedKey === 'displayMode') {\n      const v = cleanVal.toLowerCase();\n      cleanVal = (v === 'on-model' || v === 'on model' || v === 'model') ? 'on-model' : 'product-only';\n    }\n\n    parsed[mappedKey] = cleanVal;\n  }\n}\n\n// Fallback logic\nif (!parsed.productName) parsed.productName = 'this piece';\n\n// Return ONLY the parsed product\nreturn [{ json: parsed }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [ -80, -32 ],
-      "id": "code-parser-id",
+      "position": [
+        -80,
+        -32
+      ],
+      "id": "175fef5d-e311-4d2f-961d-6ea25ffc7696",
       "name": "Code"
     },
     {
@@ -36,29 +45,36 @@
       },
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
-      "position": [ 368, -32 ],
-      "id": "telegram-get-file-id",
+      "position": [
+        368,
+        -32
+      ],
+      "id": "52603cd8-1d1f-4c9a-9afe-05697df52d9a",
       "name": "Get a file",
+      "webhookId": "REDACTED",
       "credentials": {
         "telegramApi": {
-          "id": "CREDENTIAL_ID",
-          "name": "Telegram account"
+          "id": "REDACTED",
+          "name": "REDACTED"
         }
       }
     },
     {
       "parameters": {
         "promptType": "define",
-        "text": "=Product Information: ... (Prompt logic preserved) ...",
+        "text": "=Product Information:\n- Product Name: {{ $('Code').item.json.productName }}\n- Product Type: {{ $('Code').item.json.productType }}\n- Description: {{ $('Code').item.json.description }}\n- Display Mode: {{ $('Code').item.json.displayMode }}\n\nBrand Information:\n- Brand Name: {{ $('Edit Fields2').item.json.brandName }}\n- Brand Tone: {{ $('Edit Fields2').item.json.brandTone }}\n- Color Theme: {{ $('Edit Fields2').item.json.colorTheme }}\n- Background Style: {{ $('Edit Fields2').item.json.backgroundStyle }}\n- Lighting Style: {{ $('Edit Fields2').item.json.lightingStyle }}\n- Product Placement: {{ $('Edit Fields2').item.json.productPlacement }}\n- Typography Style: {{ $('Edit Fields2').item.json.typographyStyle }}\n- Composition Guideline: {{ $('Edit Fields2').item.json.compositionGuidelines }}\n\nVisual Analysis (Source Image Data):\nForensic Summary:{{ $json.content.parts[0].text }}\n\nTASK:\nUsing the product and brand information above, generate a single JSON object following the required format described in the system prompt.\n",
         "hasOutputParser": true,
         "options": {
-          "systemMessage": "=### ROLE\nYou are a Senior Creative Director... (System message logic preserved) ..."
+          "systemMessage": "=### ROLE\nYou are a Senior Creative Director for a high-end luxury beauty agency. Your specialty is transforming raw product data and visual forensic analysis into \"Lumina Beauty\" brand-aligned creative assets.\n\n### GOAL\nProduce ONE valid JSON object for a social media ad campaign with exactly ONE key: \n1. \"demoScript\" (A single, exhaustive technical AI image generation prompt)\n\n### THE SOURCE OF TRUTH (STRICT RULES)\n1. **VISUAL GROUNDING:** You must prioritize the \"Visual Analysis\" data provided in the user prompt. Use specific colors (e.g., \"Rose Blossom Pink\"), materials (\"soft-touch matte plastic\"), and typography (\"vertical uppercase sans-serif\") identified in the analysis.\n2. **PRODUCT INTEGRITY:** The \"demoScript\" you generate must NOT include any descriptions that modify, alter, or \"reimagine\" the actual product design, logo, or shape. Keep the physical item identical to the source analysis.\n3. **DE-NOISING:** The input image may contain \"noise\" (hands, background clutter, or low lighting). You must REIMAGINE the product in its \"Ideal Premium State.\" Remove all hands, fingers, or messy backgrounds from the source image.\n\n### GUARDRAILS & SAFETY (PREVENT PROMPT CLASHING)\n1. **NEUTRAL LANGUAGE:** Avoid high-risk terms that trigger safety filters. \n    - Instead of \"naked,\" \"bare,\" or \"exposed skin,\" use \"minimalist editorial styling\" or \"soft-focus portraiture.\"\n    - Instead of \"sexy\" or \"seductive,\" use \"elegant,\" \"sophisticated,\" or \"confident.\"\n2. **ANATOMICAL LIMITS:** If using a model, focus descriptions on \"facial features,\" \"hands,\" or \"shoulders.\" Avoid describing clothing in ways that could be misinterpreted as \"revealing.\"\n\n### IMAGE GENERATION (demoScript) GUIDELINES\n- **Display Mode Logic (MANDATORY):**\n    - **IF \"product-only\":** The prompt MUST NOT include any humans, hands, or models. Focus entirely on the product as a sculptural hero in a luxury environment (e.g., on marble, silk, or water).\n    - **IF \"on-model\":** The prompt MUST include both a professional high-fashion model and the physical product. The model must be interacting with or holding the product (e.g., holding it near the face). Both must be visible and clear.\n- **Technical keywords:** Use 8k resolution, cinematic lighting, macro photography, depth of field, and highly detailed textures.\n- **DIRECTIVE:** You MUST include the following instruction at the end of the \"demoScript\": \"## do not do any changes to the product\".\n\n### JSON FORMAT (MANDATORY)\nReturn ONLY the JSON object. Do not include conversational text or markdown outside the JSON block.\n\n{\n  \"demoScript\": \"[Exhaustive technical prompt following the displayMode logic. Must end with '## do not do any changes to the product']\"\n}"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.agent",
       "typeVersion": 2.2,
-      "position": [ 816, -32 ],
-      "id": "ai-creative-agent-id",
+      "position": [
+        816,
+        -32
+      ],
+      "id": "95d66728-5f5f-4bad-9a10-95796fd33f31",
       "name": "AI Agent",
       "retryOnFail": true,
       "maxTries": 2
@@ -69,24 +85,30 @@
       },
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
-      "position": [ 832, 192 ],
-      "id": "gemini-chat-model-id",
+      "position": [
+        832,
+        192
+      ],
+      "id": "2f4627a7-36e6-4d2d-b02c-37eb3b329579",
       "name": "Google Gemini Chat Model",
       "credentials": {
         "googlePalmApi": {
-          "id": "CREDENTIAL_ID",
-          "name": "Google Gemini API"
+          "id": "REDACTED",
+          "name": "REDACTED"
         }
       }
     },
     {
       "parameters": {
-        "jsonSchemaExample": "{ \"demoScript\": \"...\" }"
+        "jsonSchemaExample": "{\n  \"demoScript\": \"Extreme close-up professional beauty photography of a luxury LUMINA lip care stick with a Rose Blossom Pink matte finish and an Alabaster White base. The product is the central hero, resting on a polished white marble surface with soft, shimmering champagne highlights. The brand name 'LUMINA' is sharp and clear in vertical white sans-serif font. High-fashion editorial lighting, 8k resolution, cinematic depth of field, crisp textures. ## do not do any changes to the product\"\n}"
       },
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
-      "position": [ 960, 192 ],
-      "id": "structured-output-id",
+      "position": [
+        960,
+        192
+      ],
+      "id": "9f8c653e-ff1e-4f50-b2a3-3739d79576a6",
       "name": "Structured Output Parser"
     },
     {
@@ -98,26 +120,34 @@
       },
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
-      "position": [ 2064, -32 ],
-      "id": "telegram-send-photo-id",
+      "position": [
+        2064,
+        -32
+      ],
+      "id": "34db23fe-9012-42cf-813d-d3882aabc5f1",
       "name": "Send a photo message",
+      "webhookId": "REDACTED",
       "credentials": {
         "telegramApi": {
-          "id": "CREDENTIAL_ID",
-          "name": "Telegram account"
+          "id": "REDACTED",
+          "name": "REDACTED"
         }
-      }
+      },
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
         "mode": "raw",
-        "jsonOutput": "={ \"brandName\": \"LUMINA BEAUTY\", ... }",
+        "jsonOutput": "={\n  \"brandName\": \"LUMINA BEAUTY\",\n  \"brandTone\": \"Modern glamour \u2014 chic, bold, and high-definition.\",\n  \"colorTheme\": \"Velvet reds, shimmering champagnes, matte blacks, and rose gold.\",\n  \"backgroundStyle\": \"Clean studio backdrops, blurred dressing room lights, or luxury vanity surfaces.\",\n  \"lightingStyle\": \"High-fashion ring lighting, dramatic shadows, and crisp highlights on glossy textures.\",\n  \"productPlacement\": \"Products should be shown open or in use\u2014lipsticks uncapped, powders with a slight 'swash' or 'smudge' visible, or brushes resting nearby. Surfaces include glass, high-gloss acrylic, or mirrored trays.\",\n  \"typographyStyle\": \"Sleek, high-contrast modern sans-serif. Use bold weights for emphasis. Font colors in stark white or metallic foil effects.\",\n  \"compositionGuidelines\": \"Dynamic close-ups and dramatic angles. For 'on-model' shots, focus on the feature (lips/eyes). For 'product-only', focus on the texture of the formula.\"\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
-      "position": [ 144, -32 ],
-      "id": "set-brand-info-id",
+      "position": [
+        144,
+        -32
+      ],
+      "id": "a33a6474-0f2d-48db-a0c0-cc9829cac482",
       "name": "Edit Fields2"
     },
     {
@@ -129,19 +159,22 @@
           "parameters": [
             {
               "name": "x-goog-api-key",
-              "value": "REPLACE_WITH_YOUR_GEMINI_API_KEY"
+              "value": "AIzaREDACTED"
             }
           ]
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={ ... }",
+        "jsonBody": "={\n  \"contents\": [\n    {\n      \"parts\": [\n        {\n          \"text\": \"Apply the following creative direction to the image. Maintain luxury branding and do not alter the core product design: {{ $('AI Agent').item.json.output.demoScript }}\"\n        },\n        {\n          \"inline_data\": {\n            \"mime_type\": \"image/png\",\n            \"data\": \"{{ $json.data }}\"\n          }\n        }\n      ]\n    }\n  ],\n  \"generationConfig\": {\n    \"response_modalities\": [\"image\"]\n  },\n  \"safetySettings\": [\n    { \"category\": \"HARM_CATEGORY_HARASSMENT\", \"threshold\": \"BLOCK_ONLY_HIGH\" },\n    { \"category\": \"HARM_CATEGORY_HATE_SPEECH\", \"threshold\": \"BLOCK_ONLY_HIGH\" },\n    { \"category\": \"HARM_CATEGORY_SEXUALLY_EXPLICIT\", \"threshold\": \"BLOCK_ONLY_HIGH\" },\n    { \"category\": \"HARM_CATEGORY_DANGEROUS_CONTENT\", \"threshold\": \"BLOCK_ONLY_HIGH\" }\n  ]\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.3,
-      "position": [ 1616, -32 ],
-      "id": "http-gemini-request-id",
+      "position": [
+        1616,
+        -32
+      ],
+      "id": "b4a55e3d-276e-46f9-a32b-1f1527796a40",
       "name": "HTTP Request"
     },
     {
@@ -151,8 +184,11 @@
       },
       "type": "n8n-nodes-base.extractFromFile",
       "typeVersion": 1.1,
-      "position": [ 1392, -32 ],
-      "id": "extract-file-id",
+      "position": [
+        1392,
+        -32
+      ],
+      "id": "5cc6fce7-36f5-4d22-9460-9c73c18957f6",
       "name": "Extract from File"
     },
     {
@@ -162,21 +198,25 @@
         "modelId": {
           "__rl": true,
           "value": "models/gemini-2.5-flash",
-          "mode": "list"
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
         },
-        "text": "=Role: You are a high-end product forensic analyst...",
+        "text": "=Role: You are a high-end product forensic analyst for a luxury advertising agency.\n\nTask: Analyze the provided image and extract an exhaustive technical profile of the central product.\n\nHandling Noise: > * If the product is being held, focus solely on the product. Ignore human skin, fingers, or background clutter.\n\nFilter out sensor noise, poor lighting, or blur by inferring the product's intended premium state.\n\nOutput Requirements (Detail everything):\n\nCore Product Identity: Precise name, brand (if visible), and specific category (e.g., \"Matte Finish Liquid Lipstick\").\n\nPhysical Attributes: Material (glass, brushed metal, matte plastic), exact color shades (use hex-like descriptions like \"Deep Burgundy\" or \"Champagne Gold\"), and dimensions/scale relative to the surroundings.\n\nBranding & Typography: Describe logos, font styles (serif, sans-serif), and any visible text or slogans.\n\nTexture & Surface: Is it reflective, grainy, or smooth? Mention if there are fingerprints or dust to be ignored in the final ad.\n\nPackaging Mechanics: Describe the cap, the pump, the applicator, or any unique design features.\n\nOutput Format: Provide the details in a structured, detailed paragraph followed by a JSON-ready list of attributes.",
         "inputType": "binary",
         "options": {}
       },
       "type": "@n8n/n8n-nodes-langchain.googleGemini",
       "typeVersion": 1,
-      "position": [ 592, -32 ],
-      "id": "analyze-image-id",
+      "position": [
+        592,
+        -32
+      ],
+      "id": "2d32468c-6993-4dff-bcbc-9774dea48a6a",
       "name": "Analyze an image",
       "credentials": {
         "googlePalmApi": {
-          "id": "CREDENTIAL_ID",
-          "name": "Google Gemini API"
+          "id": "REDACTED",
+          "name": "REDACTED"
         }
       }
     },
@@ -188,13 +228,17 @@
       },
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
-      "position": [ 1168, -32 ],
-      "id": "telegram-get-file-final-id",
+      "position": [
+        1168,
+        -32
+      ],
+      "id": "bc9ec86c-13ae-45d3-8414-21199ede3d6c",
       "name": "Get a file1",
+      "webhookId": "REDACTED",
       "credentials": {
         "telegramApi": {
-          "id": "CREDENTIAL_ID",
-          "name": "Telegram account"
+          "id": "REDACTED",
+          "name": "REDACTED"
         }
       }
     },
@@ -206,28 +250,163 @@
       },
       "type": "n8n-nodes-base.convertToFile",
       "typeVersion": 1.1,
-      "position": [ 1840, -32 ],
-      "id": "convert-to-file-id",
+      "position": [
+        1840,
+        -32
+      ],
+      "id": "6d09803e-5e3c-4c51-88da-9c33a2da247c",
       "name": "Convert to File"
     }
   ],
   "pinData": {},
   "connections": {
-    "Telegram Trigger": { "main": [[ { "node": "Code", "type": "main", "index": 0 } ]] },
-    "Code": { "main": [[ { "node": "Edit Fields2", "type": "main", "index": 0 } ]] },
-    "Get a file": { "main": [[ { "node": "Analyze an image", "type": "main", "index": 0 } ]] },
-    "Google Gemini Chat Model": { "ai_languageModel": [[ { "node": "AI Agent", "type": "ai_languageModel", "index": 0 } ]] },
-    "Structured Output Parser": { "ai_outputParser": [[ { "node": "AI Agent", "type": "ai_outputParser", "index": 0 } ]] },
-    "AI Agent": { "main": [[ { "node": "Get a file1", "type": "main", "index": 0 } ]] },
-    "Edit Fields2": { "main": [[ { "node": "Get a file", "type": "main", "index": 0 } ]] },
-    "HTTP Request": { "main": [[ { "node": "Convert to File", "type": "main", "index": 0 } ]] },
-    "Extract from File": { "main": [[ { "node": "HTTP Request", "type": "main", "index": 0 } ]] },
-    "Analyze an image": { "main": [[ { "node": "AI Agent", "type": "main", "index": 0 } ]] },
-    "Get a file1": { "main": [[ { "node": "Extract from File", "type": "main", "index": 0 } ]] },
-    "Convert to File": { "main": [[ { "node": "Send a photo message", "type": "main", "index": 0 } ]] }
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Analyze an image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Get a file1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a photo message": {
+      "main": [
+        []
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze an image": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file1": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Send a photo message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
   },
   "active": false,
-  "settings": { "executionOrder": "v1" },
-  "meta": { "instanceId": "REPLACE_WITH_INSTANCE_ID" },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6908e4c4-6abe-47b7-a426-db5274b2297c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "702a7baddd3fdb480012ee407d25716d9e235460dde148c830592c99ca1999a1"
+  },
+  "id": "TlZvFV8jbJFTJcMB",
   "tags": []
 }
