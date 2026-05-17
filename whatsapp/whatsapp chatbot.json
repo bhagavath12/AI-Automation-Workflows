@@ -1,0 +1,2619 @@
+{
+  "name": "whatsapp chatbot",
+  "nodes": [
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc",
+          "mode": "list",
+          "cachedResultName": "revkins crm",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1162832579,
+          "mode": "list",
+          "cachedResultName": "SOURCE_Scraping",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc/edit#gid=1162832579"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Phone_Number",
+              "lookupValue": "=+{{ $json.body.conversation.contact_inbox.source_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        816,
+        400
+      ],
+      "id": "8f968d24-193f-48d9-8111-f00d6fd699fe",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc",
+          "mode": "list",
+          "cachedResultName": "revkins crm",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1162832579,
+          "mode": "list",
+          "cachedResultName": "SOURCE_Scraping",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc/edit#gid=1162832579"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Lead_ID": "={{ $('Get row(s) in sheet').item.json.Lead_ID }}",
+            "Automation_Status": "Paused"
+          },
+          "matchingColumns": [
+            "Lead_ID"
+          ],
+          "schema": [
+            {
+              "id": "Lead_ID",
+              "displayName": "Lead_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Business name",
+              "displayName": "Business name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Phone_Number",
+              "displayName": "Phone_Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Website_URL",
+              "displayName": "Website_URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Address_City",
+              "displayName": "Address_City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Call_Status",
+              "displayName": "Call_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Next_Action_Date",
+              "displayName": "Next_Action_Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Sequence_Progress",
+              "displayName": "Sequence_Progress",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Meeting time",
+              "displayName": "Meeting time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Meeting link",
+              "displayName": "Meeting link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "meeting status",
+              "displayName": "meeting status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Automation_Status",
+              "displayName": "Automation_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last_Processed_Status",
+              "displayName": "Last_Processed_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last_Inbound_Msg",
+              "displayName": "Last_Inbound_Msg",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Call_Notes",
+              "displayName": "Call_Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Cold_Call_Count",
+              "displayName": "Cold_Call_Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1088,
+        400
+      ],
+      "id": "87276839-bc50-4896-8f71-8a4ee70a0e97",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "37fd0b09-ab31-4538-9ffb-c8640a5f47bd",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -32,
+        -80
+      ],
+      "id": "5a2492e2-42c9-4fab-8b53-300d0173d211",
+      "name": "Webhook",
+      "webhookId": "REDACTED"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d865bdc1-fbc6-4bc3-9777-2cc4655d881a",
+              "leftValue": "={{ $json.body.message_type }}",
+              "rightValue": "incoming",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        192,
+        -80
+      ],
+      "id": "bc5254b0-95ef-4915-b836-7d4db99f1557",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.body.content }}",
+                    "rightValue": "Book a Call",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "7f161abf-60e6-4ab5-8647-03d74369dafa"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Book a Call"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "544f87ff-4131-4bfa-8f89-9e774cd3fb0f",
+                    "leftValue": "={{ $json.body.content }}",
+                    "rightValue": "More about Automations",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "More about Automations"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b1afc0fc-c676-4d1e-a928-15ff765e74b4",
+                    "leftValue": "={{ $json.body.content }}",
+                    "rightValue": "Unsubscribe",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Unsubscribe"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "1d26ffce-647d-484a-86ee-1689e0748e91",
+                    "leftValue": "={{ $json.body.content }}",
+                    "rightValue": "YES",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "YES"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "d5ff68d6-7eed-49e5-9e74-da45883ba5af",
+                    "leftValue": "={{ $json.body.content }}",
+                    "rightValue": "RESCHEDULE",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "RESCHEDULE"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "6bf46277-87b0-4abe-93eb-d9448db527e2",
+                    "leftValue": "={{ $json.body.content }}",
+                    "rightValue": "ok",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "ok"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        480,
+        -160
+      ],
+      "id": "91a83f6e-32f5-430c-ac20-0232a0e5a984",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "url": "=https://inbox.revkins.com/api/v1/accounts/1/contacts/search?q={{ $json.body.conversation.contact_inbox.source_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "CCuMJEvpJrU1drvmHtUdVcQ7"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        784,
+        -720
+      ],
+      "id": "c449f39b-b3e1-441a-8eb4-0a9546b891fa",
+      "name": "get contact id"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://inbox.revkins.com/api/v1/accounts/1/conversations/{{ $json.payload[0].messages[0].conversation_id }}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "CCuMJEvpJrU1drvmHtUdVcQ7"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"content\": \"Meeting link template...\",\n  \"message_type\": \"outgoing\",\n  \"template_params\": {\n    \"name\": \"meeting_link\",\n    \"category\": \"MARKETING\",\n    \"language\": \"en\",\n    \"processed_params\": {}\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1296,
+        -720
+      ],
+      "id": "ae748705-e11a-48c0-91a6-da31cd1a9820",
+      "name": "Send template1"
+    },
+    {
+      "parameters": {
+        "url": "=https://inbox.revkins.com/api/v1/accounts/1/contacts/{{ $json.payload[0].id }}/conversations",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "CCuMJEvpJrU1drvmHtUdVcQ7"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1040,
+        -720
+      ],
+      "id": "08dd9089-943b-49a0-baf1-707d9e8175ec",
+      "name": "get conversation id"
+    },
+    {
+      "parameters": {
+        "chatId": "1537316253",
+        "text": "=meeting link sent to :\n{{ $json.Business_Name }}\n{{ $json.Lead_ID }}\n{{ $json.Phone_Number }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1744,
+        -720
+      ],
+      "id": "9c4c97c6-452b-402d-a3b3-985f1be42a41",
+      "name": "Send a text message1",
+      "webhookId": "REDACTED",
+      "credentials": {
+        "telegramApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc",
+          "mode": "list",
+          "cachedResultName": "revkins crm",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1162832579,
+          "mode": "list",
+          "cachedResultName": "SOURCE_Scraping",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc/edit#gid=1162832579"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Phone_Number",
+              "lookupValue": "=+{{ $('Switch').item.json.body.conversation.contact_inbox.source_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1520,
+        -720
+      ],
+      "id": "b859cc77-478f-46c3-9627-bf07bbd438a9",
+      "name": "Get row(s) in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://inbox.revkins.com/api/v1/accounts/1/contacts/search?q={{ $('Switch').item.json.body.conversation.contact_inbox.source_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "CCuMJEvpJrU1drvmHtUdVcQ7"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        976,
+        -512
+      ],
+      "id": "b6bc395d-2bca-4079-b799-cb264843ffb6",
+      "name": "get contact id1"
+    },
+    {
+      "parameters": {
+        "url": "=https://inbox.revkins.com/api/v1/accounts/1/contacts/{{ $json.payload[0].id }}/conversations",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "CCuMJEvpJrU1drvmHtUdVcQ7"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1232,
+        -512
+      ],
+      "id": "99c29e4b-a88b-4971-a35e-87df9c3cd571",
+      "name": "get conversation id1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://inbox.revkins.com/api/v1/accounts/1/conversations/{{ $json.payload[0].messages[0].conversation_id }}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "CCuMJEvpJrU1drvmHtUdVcQ7"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"content\": \"Hi {{ $('Get row(s) in sheet2').item.json.Business_Name }} \ud83d\udc4b\\nHappy to share more. Here's how...\",\n  \"message_type\": \"outgoing\",\n  \"template_params\": {\n    \"name\": \"education__more_about_automations\",\n    \"category\": \"MARKETING\",\n    \"language\": \"en\",\n    \"processed_params\": {\n      \"header\": {\n        \"media_url\": \"https://revkins.com/Revkins_Sales_Deck.pdf\",\n        \"media_type\": \"document\"\n      },\n      \"body\": {\n        \"name\": \"{{ $('Get row(s) in sheet2').item.json.Business_Name }}\"\n      }\n    }\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1488,
+        -512
+      ],
+      "id": "ed9e73e5-cb92-47e2-a486-96d72989462b",
+      "name": "Send template"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc",
+          "mode": "list",
+          "cachedResultName": "revkins crm",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1162832579,
+          "mode": "list",
+          "cachedResultName": "SOURCE_Scraping",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc/edit#gid=1162832579"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Phone_Number",
+              "lookupValue": "=+{{ $('Switch').item.json.body.conversation.contact_inbox.source_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        784,
+        -512
+      ],
+      "id": "0a43e7cd-293c-4af4-8fde-fbc2c2b388db",
+      "name": "Get row(s) in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "1537316253",
+        "text": "=Sent more about our business to:\n{{ $('Get row(s) in sheet2').item.json.Lead_ID }}\n{{ $('Get row(s) in sheet2').item.json.Business_Name }}\n{{ $('Get row(s) in sheet2').item.json.Phone_Number }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1760,
+        -512
+      ],
+      "id": "391c7dae-bf3c-4938-b3c5-433102ece951",
+      "name": "Send a text message2",
+      "webhookId": "REDACTED",
+      "credentials": {
+        "telegramApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc",
+          "mode": "list",
+          "cachedResultName": "revkins crm",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1162832579,
+          "mode": "list",
+          "cachedResultName": "SOURCE_Scraping",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc/edit#gid=1162832579"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Sequence_Progress": "T3_Sent",
+            "Automation_Status": "Completed",
+            "Lead_ID": "={{ $('Get row(s) in sheet2').item.json.Lead_ID }}"
+          },
+          "matchingColumns": [
+            "Lead_ID"
+          ],
+          "schema": [
+            {
+              "id": "Lead_ID",
+              "displayName": "Lead_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Business name",
+              "displayName": "Business name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Phone_Number",
+              "displayName": "Phone_Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Website_URL",
+              "displayName": "Website_URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Address_City",
+              "displayName": "Address_City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Call_Status",
+              "displayName": "Call_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Next_Action_Date",
+              "displayName": "Next_Action_Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Sequence_Progress",
+              "displayName": "Sequence_Progress",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Meeting time",
+              "displayName": "Meeting time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Meeting link",
+              "displayName": "Meeting link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "meeting status",
+              "displayName": "meeting status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Automation_Status",
+              "displayName": "Automation_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last_Processed_Status",
+              "displayName": "Last_Processed_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last_Inbound_Msg",
+              "displayName": "Last_Inbound_Msg",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Call_Notes",
+              "displayName": "Call_Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Cold_Call_Count",
+              "displayName": "Cold_Call_Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1968,
+        -512
+      ],
+      "id": "11fdc5e0-0f47-4a06-8dc0-d9a8c1dbb1c6",
+      "name": "Append or update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc",
+          "mode": "list",
+          "cachedResultName": "revkins crm",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1162832579,
+          "mode": "list",
+          "cachedResultName": "SOURCE_Scraping",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc/edit#gid=1162832579"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Sequence_Progress": "T3_Sent",
+            "Automation_Status": "Completed",
+            "Lead_ID": "={{ $('Get row(s) in sheet1').item.json.Lead_ID }}"
+          },
+          "matchingColumns": [
+            "Lead_ID"
+          ],
+          "schema": [
+            {
+              "id": "Lead_ID",
+              "displayName": "Lead_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Business name",
+              "displayName": "Business name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Phone_Number",
+              "displayName": "Phone_Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Website_URL",
+              "displayName": "Website_URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Address_City",
+              "displayName": "Address_City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Call_Status",
+              "displayName": "Call_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Next_Action_Date",
+              "displayName": "Next_Action_Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Sequence_Progress",
+              "displayName": "Sequence_Progress",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Meeting time",
+              "displayName": "Meeting time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Meeting link",
+              "displayName": "Meeting link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "meeting status",
+              "displayName": "meeting status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Automation_Status",
+              "displayName": "Automation_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last_Processed_Status",
+              "displayName": "Last_Processed_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last_Inbound_Msg",
+              "displayName": "Last_Inbound_Msg",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Call_Notes",
+              "displayName": "Call_Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Cold_Call_Count",
+              "displayName": "Cold_Call_Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1952,
+        -720
+      ],
+      "id": "42976647-05fe-429c-b0fc-81baf1f9032b",
+      "name": "Append or update row in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Contact Name: {{ $('Switch').item.json.body.conversation.messages[0].sender.name }}\nMessage: {{ $('Switch').item.json.body.conversation.messages[0].processed_message_content }}",
+        "options": {
+          "systemMessage": "=You are a WhatsApp sales assistant for Revkins, an automation agency that builds AI-powered systems for agencies and service businesses in India.\n\nYour name is Abhay. Always introduce yourself as Abhay from Revkins. Never use placeholders like [Your Name] or [Name].\n\nYour goal is to have a natural, helpful conversation that leads to the prospect booking a free 30-minute discovery call. You are warm, confident, and concise \u2014 this is WhatsApp, not email. Keep messages short (2-4 sentences max).\n\n**About Revkins:**\nRevkins builds custom automation systems that remove manual work from business operations. Our core areas include:\n- Lead capture and automated follow-up sequences\n- Client onboarding workflows\n- AI agents and chatbots for qualifying leads and answering FAQs\n- Personalized outreach at scale\n- CRM and tool integrations so data flows automatically\n- Automated reporting and dashboards\n\n**How you should respond:**\n- If someone asks what Revkins does or how it works, give a brief explanation relevant to their business and nudge toward a call.\n- If someone asks about a specific service (like onboarding automation, lead follow-up, chatbots, reporting), briefly explain what's possible but always emphasize that every business is different and the best next step is a short discovery call where we map out what's automatable in their current setup.\n- If someone asks about pricing, say that it depends on the scope and complexity, and that the discovery call is free with no commitment \u2014 we'll map out what's possible and give a clear picture of cost after understanding their setup.\n- If someone asks technical questions (what tools, what tech stack, how it integrates), keep it high-level. Say we work with the tools they already use and build around their existing infrastructure. The discovery call is where we get into specifics.\n- If someone seems interested or ready, share the meeting link: https://calendly.com/revkins-info/30min (replace with your actual link)\n- If someone says they're not interested, be respectful. Thank them for their time and let them know the door is always open.\n\n**Rules:**\n- Never mention specific tools, platforms, or tech stack (no mentioning n8n, Chatwoot, Make, Zapier, etc.)\n- Never make up case studies or client names\n- Never promise specific results or ROI numbers\n- Never send long messages \u2014 this is WhatsApp, keep it conversational\n- Always steer toward booking the discovery call as the natural next step\n- Do not answer questions that are unrelated to Revkins or business automation \u2014 politely redirect\n- Use the prospect's name when you have it\n- Never use placeholders or brackets like [Your Name], [Company], [X] \u2014 always use real information you have\n-If they ask for meeting timings just mention that our team will reachout to you\n\n**Tone:** Friendly, professional, confident. Like a knowledgeable friend who happens to run an automation agency. Not salesy or pushy.\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1344,
+        400
+      ],
+      "id": "b743d287-a38a-4a86-ac9a-38cbc278ae2a",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        1344,
+        640
+      ],
+      "id": "a1f1aa66-45e0-464b-8f3f-4ceae7471b99",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://inbox.revkins.com/api/v1/accounts/1/conversations/{{ $('Switch').item.json.body.conversation.id }}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "CCuMJEvpJrU1drvmHtUdVcQ7"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "content",
+              "value": "={{ $json.output }}"
+            },
+            {
+              "name": "message_type",
+              "value": "outgoing"
+            },
+            {
+              "name": "private",
+              "value": "false"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1696,
+        400
+      ],
+      "id": "e0d052ca-3473-423a-85f2-be4d8ee3efc6",
+      "name": "ai reply"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Get row(s) in sheet').item.json.Phone_Number }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        1440,
+        640
+      ],
+      "id": "26e77f25-4003-430a-8170-52392e1180c5",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc",
+          "mode": "list",
+          "cachedResultName": "revkins crm",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1162832579,
+          "mode": "list",
+          "cachedResultName": "SOURCE_Scraping",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc/edit#gid=1162832579"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Phone_Number",
+              "lookupValue": "=+{{ $('Switch').item.json.body.conversation.contact_inbox.source_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        800,
+        -272
+      ],
+      "id": "eb8b3fbd-3ba0-4bb7-8be6-3ed5de03f5d6",
+      "name": "Get row(s) in sheet3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc",
+          "mode": "list",
+          "cachedResultName": "revkins crm",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1162832579,
+          "mode": "list",
+          "cachedResultName": "SOURCE_Scraping",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc/edit#gid=1162832579"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Lead_ID": "={{ $('Get row(s) in sheet3').item.json.Lead_ID }}",
+            "Automation_Status": "Paused",
+            "Sequence_Progress": "Unsubscribed"
+          },
+          "matchingColumns": [
+            "Lead_ID"
+          ],
+          "schema": [
+            {
+              "id": "Lead_ID",
+              "displayName": "Lead_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Business name",
+              "displayName": "Business name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Phone_Number",
+              "displayName": "Phone_Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Website_URL",
+              "displayName": "Website_URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Address_City",
+              "displayName": "Address_City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Call_Status",
+              "displayName": "Call_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Next_Action_Date",
+              "displayName": "Next_Action_Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Sequence_Progress",
+              "displayName": "Sequence_Progress",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Meeting time",
+              "displayName": "Meeting time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Meeting link",
+              "displayName": "Meeting link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "meeting status",
+              "displayName": "meeting status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Automation_Status",
+              "displayName": "Automation_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last_Processed_Status",
+              "displayName": "Last_Processed_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last_Inbound_Msg",
+              "displayName": "Last_Inbound_Msg",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Call_Notes",
+              "displayName": "Call_Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Cold_Call_Count",
+              "displayName": "Cold_Call_Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1056,
+        -272
+      ],
+      "id": "50935795-c9cc-41cb-9468-24b4f5bc178e",
+      "name": "Append or update row in sheet3",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://inbox.revkins.com/api/v1/accounts/1/contacts/search?q={{ $('Switch').item.json.body.conversation.contact_inbox.source_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "CCuMJEvpJrU1drvmHtUdVcQ7"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1328,
+        -272
+      ],
+      "id": "7d7f40ae-bb2f-412c-8232-c7fc7a490a0e",
+      "name": "get contact id2"
+    },
+    {
+      "parameters": {
+        "url": "=https://inbox.revkins.com/api/v1/accounts/1/contacts/{{ $json.payload[0].id }}/conversations",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "CCuMJEvpJrU1drvmHtUdVcQ7"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1584,
+        -272
+      ],
+      "id": "b62484ae-0b54-4c2c-ae64-4d4bc43557ef",
+      "name": "get conversation id2"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://inbox.revkins.com/api/v1/accounts/1/conversations/{{ $json.payload[0].id }}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "CCuMJEvpJrU1drvmHtUdVcQ7"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"content\": \"You've successfully unsubscribed. You won't receive any more messages from us. If you ever change your mind, feel free to reach out anytime. \ud83d\ude4f\",\n  \"message_type\": \"outgoing\",\n  \"private\": false\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1824,
+        -272
+      ],
+      "id": "767eab0c-b99d-4e2a-83d7-5738ac4287e0",
+      "name": "Send template2"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc",
+          "mode": "list",
+          "cachedResultName": "revkins crm",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1162832579,
+          "mode": "list",
+          "cachedResultName": "SOURCE_Scraping",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc/edit#gid=1162832579"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Phone_Number",
+              "lookupValue": "=+{{ $('Switch').item.json.body.conversation.contact_inbox.source_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        816,
+        -80
+      ],
+      "id": "e711e266-98a4-41ff-8332-829267081360",
+      "name": "Get row(s) in sheet4",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc",
+          "mode": "list",
+          "cachedResultName": "revkins crm",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1162832579,
+          "mode": "list",
+          "cachedResultName": "SOURCE_Scraping",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc/edit#gid=1162832579"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Phone_Number",
+              "lookupValue": "=+{{ $('Switch').item.json.body.conversation.contact_inbox.source_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        832,
+        112
+      ],
+      "id": "693f84f7-1071-477c-b302-2d1ac67bb953",
+      "name": "Get row(s) in sheet5",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://inbox.revkins.com/api/v1/accounts/1/contacts/search?q={{ $('Switch').item.json.body.conversation.contact_inbox.source_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "CCuMJEvpJrU1drvmHtUdVcQ7"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1136,
+        112
+      ],
+      "id": "42f2b05a-2d80-4e34-acd6-71bceef1a3b4",
+      "name": "get contact id3"
+    },
+    {
+      "parameters": {
+        "url": "=https://inbox.revkins.com/api/v1/accounts/1/contacts/{{ $json.payload[0].id }}/conversations",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "CCuMJEvpJrU1drvmHtUdVcQ7"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1392,
+        112
+      ],
+      "id": "fc6bf7fb-de08-460c-8e9e-2bb648211edf",
+      "name": "get conversation id3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://inbox.revkins.com/api/v1/accounts/1/conversations/{{ $json.payload[0].id }}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "CCuMJEvpJrU1drvmHtUdVcQ7"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"content\": \"No problem at all, {{ $('Get row(s) in sheet5').item.json.Name }}!\\nWhat day and time works best for you?...\",\n  \"message_type\": \"outgoing\",\n  \"template_params\": {\n    \"name\": \"reschedule\",\n    \"category\": \"UTILITY\",\n    \"language\": \"en\",\n    \"processed_params\": {\n      \"body\": {\n        \"name\": \"{{ $('Get row(s) in sheet5').item.json.Name }}\"\n      }\n    }\n  }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1632,
+        112
+      ],
+      "id": "12e2dfc1-74ea-461a-ab3e-ac7337915fbb",
+      "name": "Send template3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://inbox.revkins.com/api/v1/accounts/1/conversations/{{ $('Switch').item.json.body.conversation.id }}/messages",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api_access_token",
+              "value": "CCuMJEvpJrU1drvmHtUdVcQ7"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "content",
+              "value": "=Thank You for the confirmation We look Forwards to seeing you there This will be our meeting link\n{{ $json['Meeting link'] }}"
+            },
+            {
+              "name": "message_type",
+              "value": "outgoing"
+            },
+            {
+              "name": "private",
+              "value": "false"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1152,
+        -80
+      ],
+      "id": "8f2f4d92-5d74-445e-9ac5-b78c68dcbdd2",
+      "name": "Meeting confirmation"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc",
+          "mode": "list",
+          "cachedResultName": "revkins crm",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1162832579,
+          "mode": "list",
+          "cachedResultName": "SOURCE_Scraping",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc/edit#gid=1162832579"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Sequence_Progress": "Meeting Confirmed",
+            "Automation_Status": "Completed",
+            "Phone_Number": "={{ $('Webhook').item.json.body.conversation.messages[0].sender.phone_number }}"
+          },
+          "matchingColumns": [
+            "Phone_Number"
+          ],
+          "schema": [
+            {
+              "id": "Lead_ID",
+              "displayName": "Lead_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Business name",
+              "displayName": "Business name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Phone_Number",
+              "displayName": "Phone_Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Website_URL",
+              "displayName": "Website_URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Address_City",
+              "displayName": "Address_City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Call_Status",
+              "displayName": "Call_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Next_Action_Date",
+              "displayName": "Next_Action_Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Sequence_Progress",
+              "displayName": "Sequence_Progress",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Meeting time",
+              "displayName": "Meeting time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Meeting link",
+              "displayName": "Meeting link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "meeting status",
+              "displayName": "meeting status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Automation_Status",
+              "displayName": "Automation_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Last_Processed_Status",
+              "displayName": "Last_Processed_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last_Inbound_Msg",
+              "displayName": "Last_Inbound_Msg",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Call_Notes",
+              "displayName": "Call_Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Cold_Call_Count",
+              "displayName": "Cold_Call_Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1456,
+        -80
+      ],
+      "id": "de49fc95-45fd-4e61-9141-a34a8ad33d70",
+      "name": "Append or update row in sheet10",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc",
+          "mode": "list",
+          "cachedResultName": "revkins crm",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1162832579,
+          "mode": "list",
+          "cachedResultName": "SOURCE_Scraping",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Rw2sSUdnkuV4DeP8vAuOxH7579e8YyRl2khCScA0nDc/edit#gid=1162832579"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Sequence_Progress": "Reschedule Temp Sent",
+            "Automation_Status": "Completed",
+            "Phone_Number": "={{ $('Webhook').item.json.body.conversation.messages[0].sender.phone_number }}"
+          },
+          "matchingColumns": [
+            "Phone_Number"
+          ],
+          "schema": [
+            {
+              "id": "Lead_ID",
+              "displayName": "Lead_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Business name",
+              "displayName": "Business name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Phone_Number",
+              "displayName": "Phone_Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Website_URL",
+              "displayName": "Website_URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Address_City",
+              "displayName": "Address_City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Call_Status",
+              "displayName": "Call_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Next_Action_Date",
+              "displayName": "Next_Action_Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Sequence_Progress",
+              "displayName": "Sequence_Progress",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Meeting time",
+              "displayName": "Meeting time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Meeting link",
+              "displayName": "Meeting link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "meeting status",
+              "displayName": "meeting status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Automation_Status",
+              "displayName": "Automation_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Last_Processed_Status",
+              "displayName": "Last_Processed_Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Last_Inbound_Msg",
+              "displayName": "Last_Inbound_Msg",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Call_Notes",
+              "displayName": "Call_Notes",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "Cold_Call_Count",
+              "displayName": "Cold_Call_Count",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1872,
+        112
+      ],
+      "id": "dd8bbdf0-6376-4e4b-a396-89bfdc4cf653",
+      "name": "Append or update row in sheet11",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "REDACTED",
+          "name": "REDACTED"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get contact id": {
+      "main": [
+        [
+          {
+            "node": "get conversation id",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get conversation id": {
+      "main": [
+        [
+          {
+            "node": "Send template1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "get contact id",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet3",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet4",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet5",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send template1": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get contact id1": {
+      "main": [
+        [
+          {
+            "node": "get conversation id1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get conversation id1": {
+      "main": [
+        [
+          {
+            "node": "Send template",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet2": {
+      "main": [
+        [
+          {
+            "node": "get contact id1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send template": {
+      "main": [
+        [
+          {
+            "node": "Send a text message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message2": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message1": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet": {
+      "main": [
+        []
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "ai reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet3": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get contact id2": {
+      "main": [
+        [
+          {
+            "node": "get conversation id2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append or update row in sheet3": {
+      "main": [
+        [
+          {
+            "node": "get contact id2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get conversation id2": {
+      "main": [
+        [
+          {
+            "node": "Send template2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet4": {
+      "main": [
+        [
+          {
+            "node": "Meeting confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get contact id3": {
+      "main": [
+        [
+          {
+            "node": "get conversation id3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get conversation id3": {
+      "main": [
+        [
+          {
+            "node": "Send template3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet5": {
+      "main": [
+        [
+          {
+            "node": "get contact id3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Meeting confirmation": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet10",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send template3": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet11",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "16bb4a18-7e9f-4ccc-8315-6b1035a9c470",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "287a4a5dd28f5c98ddc589241c318b3e7269f1150ce5ac1bb73c0a19ae94ad04"
+  },
+  "id": "C9aHSXWgowuDhjQ2",
+  "tags": []
+}
